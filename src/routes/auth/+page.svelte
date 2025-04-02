@@ -1,47 +1,29 @@
 <script lang="ts">
   import "../../styles/app.css";
+  import {
+    PUBLIC_ACCESS_TOKEN,
+    PUBLIC_CLIENT_ID,
+    PUBLIC_REDIRECT_URI,
+  } from "$env/static/public";
+  import { onMount } from "svelte";
+  import type { PageProps } from "./$types";
 
-  const generateRandomString = (length: number) => {
-    const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const values = crypto.getRandomValues(new Uint8Array(length));
-    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-  };
+  let { data }: PageProps = $props();
 
-  const codeVerifier = generateRandomString(64);
+  console.log(data);
+  const codeChallenge = data.codeChallenge;
+  const codeVerifier: string = data.codeVerifier;
+  const clientId = PUBLIC_CLIENT_ID;
+  const redirectUri = PUBLIC_REDIRECT_URI;
 
-  const sha256 = async (plain: string) => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(plain);
-    return window.crypto.subtle.digest("SHA-256", data);
-  };
-
-  const base64encode = (input: any) => {
-    return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, "")
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_");
-  };
-
-  let codeChallenge = $state();
-  const cod = async () => {
-    const hashed = await sha256(codeVerifier);
-    codeChallenge = base64encode(hashed);
-  };
-
-  cod();
-
-  const login = async (): Promise<void> => {
-    const clientId = "1ab88bb408eb4b849650f0119d8bd38f";
-    const redirectUri = "http://localhost:5173/auth";
-
+  const authorize = () => {
     const scope = "user-read-private user-read-email";
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     // generated in the previous step
     window.localStorage.setItem("code_verifier", codeVerifier);
 
-    const params: any = {
+    const params = {
       response_type: "code",
       client_id: clientId,
       scope,
@@ -53,7 +35,42 @@
     authUrl.search = new URLSearchParams(params).toString();
     window.location.href = authUrl.toString();
   };
+
+  onMount(() => {});
+
+  //const accessToken: string = PUBLIC_ACCESS_TOKEN;
+  let accessToken: string = $state("");
+
+  const login = async (): Promise<void> => {
+    let response = await fetch("/api/auth");
+    //console.log(await response.json());
+    let data = await response.json();
+    accessToken = await data.access_token;
+    localStorage.setItem("token", data);
+    alert("done");
+  };
+
+  async function getProfile() {
+    console.log(accessToken);
+    const response = await fetch(
+      "https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+  }
 </script>
 
 <h1>This the authentication page</h1>
 <button class="bg-red-500" onclick={login}> click here to login </button>
+<button class="bg-red-500" onclick={getProfile}>
+  click here to get profile
+</button>
+
+<button onclick={authorize} class="p-3 text-lg bg-gray-500">Authorize</button>

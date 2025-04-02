@@ -1,29 +1,23 @@
 
-//let client_secret :string = "0eb0bdf1345348cbabf5c7a7fbe0973f"
+import type { Actions } from './$types';
+import { redirect } from '@sveltejs/kit';
+import {CLIENT_ID, REDIRECT_URI} from '$env/static/private';
 
-/*
-const generateRandomString = (length:number) => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const values = crypto.getRandomValues(new Uint8Array(length));
-    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-  }
-  
-  const codeVerifier  = generateRandomString(64);
+export const actions = {
+	login_: async ({request}) => {
+		console.log("ther server is workig --------------------")
+    const state = generateRandomString(16);
+    const scope = 'user-read-private user-read-email';
 
-  console.log(codeVerifier)
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: CLIENT_ID,
+      scope:scope,
+      redirect_uri: REDIRECT_URI,
+      state: state
+    });
 
-  const sha256 = async (plain :string) => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plain)
-    return window.crypto.subtle.digest('SHA-256', data)
-  }
-  
-  const base64encode = (input : any) => {
-    return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-  }
-
-
-*/
+    console.log(params.toString)
+    throw redirect(302, `https://accounts.spotify.com/authorize?${params.toString()}`);
+	}
+} satisfies Actions;

@@ -1,69 +1,73 @@
-
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import {CLIENT_ID, REDIRECT_URI, CLIENT_SECRET} from '$env/static/private';
+import { json } from '@sveltejs/kit';
 
 
-var redirect_url : string = "http://localhost:5173/auth";
-let client_id : string = "1ab88bb408eb4b849650f0119d8bd38f"
 
-
-export const GET = async ({ url })  => {
-	console.log("ther server is workig --------------------")
-	// The code for requesting user authorization looks as follows:
-		const clientId = client_id
-		const redirectUri = redirect_url
-
-		const scope = 'user-read-private user-read-email';
-		const authUrl = new URL("https://accounts.spotify.com/authorize")
-
-		// generated in the previous step
-		//window.localStorage.setItem('code_verifier', codeVerifier);
-
-		const params =  {
-		response_type: 'code',
-		client_id: clientId,
-		scope,
-		code_challenge_method: 'S256',
-		code_challenge: codeChallenge,
-		redirect_uri: redirectUri,
-		}
-
-		authUrl.search = new URLSearchParams(params).toString();
-		// Return the authorization URL to the client
-		return new Response(JSON.stringify({ authUrl: authUrl.toString() }), {
-			headers: { 'Content-Type': 'application/json' },
-		  });
+/*
+function generateRandomString(length: number) {
+	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let text = '';
+	for (let i = 0; i < length; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
 }
 
 
+export const GET: RequestHandler = ({ url }) => {
+	console.log("ther server is workig --------------------")
+	const state = generateRandomString(16);
+	const scope = 'user-read-private user-read-email';
 
+	const params = new URLSearchParams({
+		response_type: 'code',
+		client_id: CLIENT_ID,
+		scope:scope,
+		redirect_uri: REDIRECT_URI,
+		state: state
+	});
 
+	console.log(params.toString)
+	throw redirect(302, `https://accounts.spotify.com/authorize?${params.toString()}`);
+}
 
+*/
+let client_id :string = CLIENT_ID
+let redirect_uri :string = REDIRECT_URI
+let client_secret :string = CLIENT_SECRET
 
-const generateRandomString = (length:number) => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const values = crypto.getRandomValues(new Uint8Array(length));
-    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-  }
-  
-const codeVerifier  = generateRandomString(64);
+export const GET: RequestHandler = async ({ url }) => {
+	const authString = btoa(`${client_id}:${client_secret}`);
+	let response : any;
+	let data : any;
+	try{
+		response = await fetch('https://accounts.spotify.com/api/token', {
+		method: 'POST',
+		headers: {
+			'Authorization': `Basic ${authString}`,
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: new URLSearchParams({
+			grant_type: 'client_credentials'
+		})
+		});
+	
+		data = await response.json();
+		
+	}
+	catch (error){
+		console.error('Failed to fetch token:', response.status, await response.text());
+		console.error("There was an error : ", error)
+	}
+	finally{
+		const token = data.access_token;
+		console.log('Access Token:', token);
+		console.log(data)
+		return json(data);
+		
+	}
 
-  console.log(codeVerifier)
-
-const sha256 = async (plain :string) => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plain)
-    return window.crypto.subtle.digest('SHA-256', data)
-  }
-  
-const base64encode = (input : any) => {
-    return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-  }
-
-const hashed = await sha256(codeVerifier)
-const codeChallenge = base64encode(hashed);
-  
-
+	
+}
