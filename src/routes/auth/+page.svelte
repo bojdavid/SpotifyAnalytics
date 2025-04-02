@@ -17,7 +17,8 @@
   const redirectUri = PUBLIC_REDIRECT_URI;
 
   const authorize = () => {
-    const scope = "user-read-private user-read-email";
+    const scope =
+      "user-read-private user-read-email user-top-read user-read-recently-played user-read-playback-position user-follow-read playlist-read-private playlist-read-collaborative";
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     // generated in the previous step
@@ -37,40 +38,10 @@
   };
 
   onMount(() => {});
-
-  //const accessToken: string = PUBLIC_ACCESS_TOKEN;
-  let accessToken: string = $state("");
-
-  const login = async (): Promise<void> => {
-    let response = await fetch("/api/auth");
-    //console.log(await response.json());
-    let data = await response.json();
-    accessToken = await data.access_token;
-    localStorage.setItem("token", data);
-    alert("done");
-  };
-
-  async function getProfile() {
-    console.log(accessToken);
-    const response = await fetch(
-      "https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-
-    const data = await response.json();
-
-    console.log(data);
-  }
 </script>
 
 <h1>This the authentication page</h1>
-<button class="bg-red-500" onclick={login}> click here to login </button>
-<button class="bg-red-500" onclick={getProfile}>
-  click here to get profile
-</button>
 
-<button onclick={authorize} class="p-3 text-lg bg-gray-500">Authorize</button>
+<button onclick={authorize} class="p-3 text-lg bg-gray-500"
+  >Login With Spotify
+</button>

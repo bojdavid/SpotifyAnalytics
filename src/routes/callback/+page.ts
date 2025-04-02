@@ -1,4 +1,5 @@
 import type { PageLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 import {
     PUBLIC_ACCESS_TOKEN,
     PUBLIC_CLIENT_ID,
@@ -7,7 +8,7 @@ import {
 
   const clientId = PUBLIC_CLIENT_ID;
   const redirectUri = PUBLIC_REDIRECT_URI;
-  let accessToken 
+
 
 export const ssr = false; // 👈 disables server-side rendering
 
@@ -36,18 +37,39 @@ export const load: PageLoad = async ({ params }) => {
       }),
     };
 
-    const response = await fetch(url, payload);
-    const data: {
-      access_token: string;
-      token_type: string;
-      scope: string;
-      expires_in: number;
-      refresh_token?: string;
-    } = await response.json();
+    try{
 
-    localStorage.setItem("access_token", data.access_token);
-    console.log(data);
-    accessToken = data.access_token;
+        const response = await fetch(url, payload);
+        if(response.ok){
+            const data: {
+              access_token: string;
+              token_type: string;
+              scope: string;
+              expires_in: number;
+              refresh_token?: string;
+            } = await response.json();
+        
+            localStorage.setItem("access_token", data.access_token);
+            //throw redirect(307,"/analytics")
+            window.location.href = '/analytics'
+        }
+        else{
+            alert("An error occured")
+            throw new Error("Failed to get token");
+        }
+    }catch (err){
+        // Case 1: Handle SvelteKit redirects
+        if (err instanceof redirect) {
+            throw err; // Re-throw redirect to let SvelteKit handle it
+        }
+        
+        console.error(err);
+
+        return;
+    }
+    finally{
+        console.log("The get token function worked")
+    }
   };
 
   const urlParams = new URLSearchParams(window.location.search);
