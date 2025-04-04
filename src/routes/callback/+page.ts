@@ -1,7 +1,6 @@
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import {
-    PUBLIC_ACCESS_TOKEN,
     PUBLIC_CLIENT_ID,
     PUBLIC_REDIRECT_URI,
   } from "$env/static/public";

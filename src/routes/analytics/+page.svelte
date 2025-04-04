@@ -1,5 +1,11 @@
 <script lang="ts">
+  import { error } from "@sveltejs/kit";
   import { onMount } from "svelte";
+  import ProfileData from "$lib/components/analytics/ProfileData.svelte";
+  import TopData from "$lib/components/analytics/TopData.svelte";
+
+  import "../../styles/app.css";
+  import LightSwitch from "$lib/components/LightSwitch.svelte";
 
   interface userdata {
     country: "string";
@@ -30,21 +36,22 @@
     uri: "string";
   }
 
-  let data: Promise<userdata> | undefined = $state();
+  let data: any = $state();
 
   let topArtistsData: any = $state();
-  let loading: boolean = $state(true);
+  let loading: boolean = $state(false);
 
   async function getProfile(accessToken: any) {
-    //let accessToken = localStorage.getItem("access_token");
-    //console.log(accessToken);
     if (accessToken != "undefined") {
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
           Authorization: "Bearer " + accessToken,
         },
       });
-
+      if (!response.ok) {
+        const errorText = await response.json(); // or res.text() if error is text
+        throw new Error(`Profile Error [${response.status}]: ${errorText}`);
+      }
       return await response.json();
     } else {
       alert("Access token is undefined");
@@ -61,48 +68,82 @@
           },
         }
       );
-
+      if (!response.ok) {
+        const errorText = await response.json(); // or res.text() if error is a text
+        throw new Error(`Profile Error [${response.status}]: ${errorText}`);
+      }
       return await response.json();
     } else {
-      alert("Access token is undefined");
+      alert("Access token is undefined hopefully");
     }
   };
-
+  /*
   onMount(async () => {
     console.log("-------------------- ------");
     try {
       loading = true;
       let accessToken: any = localStorage.getItem("access_token");
-      data = await getProfile(accessToken);
-      topArtistsData = await getTopArtists(accessToken);
+
+      [data, topArtistsData] = await Promise.all([
+        getProfile(accessToken),
+        getTopArtists(accessToken),
+      ]);
     } catch (err) {
+      loading = false;
+
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      alert(`Error: ${errorMsg}`);
+      console.error("The error message:", errorMsg);
+      //Redirect back to the auth page if accessToken has expired.
     } finally {
       loading = false;
-      console.log($state.snapshot(topArtistsData));
     }
   });
+*/
+
+  const filters: string[] = [
+    "Top Artists",
+    "Following",
+    "Playlists",
+    "Random Song",
+    "sdsd",
+    "wewe",
+    "wewe",
+  ];
+
+  //Sample range for table data
+  const range = Array.from({ length: 5 }, (_, i) => i + 1);
 </script>
 
-<div>
-  {#if loading}
-    <div>Loading</div>
-  {:else}
-    <div class="flex-col">
-      <div>
-        {data.display_name}
+<main class="mx-4">
+  <div>
+    {#if loading}
+      <div>Loading</div>
+    {:else}
+      <div class="flex-col gap-4">
+        <div
+          class="flex justify-between flex-wrap max-w-[1700px] min-w-[200px] w-full pr-10 bg-surface-100 dark:bg-surface-900 mx-auto pl-5 mt-5"
+        >
+          <div class="max-w-[800px] w-full py-3 flex flex-wrap justify-between">
+            <ProfileData user={data} />
+            <label class="label w-[250px]">
+              <span class="label-text text-lg">Category To View</span>
+              <select class="select">
+                {#each filters as filter, i}
+                  <option value={i}> {filter}</option>
+                {/each}
+              </select>
+            </label>
+          </div>
+          <div class=" p-5">
+            <LightSwitch />
+          </div>
+        </div>
       </div>
-      <div>
-        {data.country}
+      <!-- TOP ARTISTS-->
+      <div class="mt-10">
+        <TopData />
       </div>
-      <div>
-        {data.email}
-      </div>
-      <img
-        src={data.images.url}
-        alt=""
-        height={data.images.height}
-        width={data.images.width}
-      />
-    </div>
-  {/if}
-</div>
+    {/if}
+  </div>
+</main>
