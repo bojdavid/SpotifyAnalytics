@@ -2,10 +2,6 @@
   import "../../styles/app.css";
   import LightSwitch from "$lib/components/LightSwitch.svelte";
 
-  // Icons
-  import IconMoon from "@lucide/svelte/icons/moon";
-  import IconSun from "@lucide/svelte/icons/sun";
-
   import {
     PUBLIC_ACCESS_TOKEN,
     PUBLIC_CLIENT_ID,

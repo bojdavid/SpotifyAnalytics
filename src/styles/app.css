@@ -5,7 +5,7 @@
 @import "@skeletonlabs/skeleton/themes/cerberus";
 @import '@skeletonlabs/skeleton/themes/terminus';
 
-@custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../node_modules/@skeletonlabs/skeleton-svelte/dist';
 

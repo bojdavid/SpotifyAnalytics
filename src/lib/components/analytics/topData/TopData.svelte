@@ -1,34 +1,29 @@
 <script lang="ts">
-  interface TopArtists {
-    name: string;
-    image: {
-      url: string;
-      height: number;
-      width: number;
-    };
-    followers: number;
-    genres: string[];
-    href: string; // A link to the Web API endpoint providing full details of the artist.
-    uri: string; //The Spotify URI for the artist.
-  }
+  import { Pagination } from "@skeletonlabs/skeleton-svelte";
+  // Icons
+  import IconArrowLeft from "@lucide/svelte/icons/arrow-left";
+  import IconArrowRight from "@lucide/svelte/icons/arrow-right";
+  import IconEllipsis from "@lucide/svelte/icons/ellipsis";
+  import IconFirst from "@lucide/svelte/icons/chevrons-left";
+  import IconLast from "@lucide/svelte/icons/chevron-right";
 
-  interface TrackArtistsData {
-    artistsName: string;
-    id: string;
-    href: string; // A link to the Web API endpoint providing full details of the artist.
-    uri: string; // The Spotify URI for the artist.
-  }
+  import type {
+    TopArtists,
+    TrackArtistsData,
+    TopTracks,
+  } from "$lib/types/spotifyTypes1";
 
-  interface TopTracks {
-    artists: TrackArtistsData[];
-    availableMarkets: string[]; // a list of countries the song is playable in
-    duration: number;
-    explicit: boolean;
-    link_to_track: string;
-    popularity: number; // how much you have listened to the song i guess
-    is_local: boolean; // whether the file is from a local stroge
-  }
+  let { topArtists_ } = $props();
 
+  console.log("topArtisitData", topArtists_);
+
+  let topArtists: TopArtists[] = $state([]);
+
+  $effect(() => {
+    topArtists = topArtists_.items;
+  });
+
+  /*
   const topArtists: TopArtists[] = [
     {
       name: "Taylor Swift",
@@ -191,7 +186,7 @@
       uri: "#",
     },
   ];
-
+*/
   const trackArtists: TrackArtistsData[] = [
     { artistsName: "Taylor Swift", id: "1", href: "#", uri: "#" },
     { artistsName: "Drake", id: "2", href: "#", uri: "#" },
@@ -216,6 +211,12 @@
   ];
 
   let activeTop: string = "topArtists";
+  // State
+  let page = $state(1);
+  let size = $state(5);
+  const slicedSource = $derived((s: TopArtists[]) =>
+    s.slice((page - 1) * size, page * size)
+  );
 </script>
 
 <div>
@@ -232,10 +233,10 @@
           </tr>
         </thead>
         <tbody class="[&>tr]:hover:preset-tonal-primary">
-          {#each topArtists as artists}
+          {#each slicedSource(topArtists) as artists}
             <tr>
               <td>{artists.name}</td>
-              <td>{artists.followers}</td>
+              <td>{artists.followers.total}</td>
               <td>{artists.genres}</td>
               <td>
                 <a
@@ -258,3 +259,33 @@
     </div>
   {/if}
 </div>
+<!-- Footer -->
+<footer class="flex justify-between">
+  <select
+    name="size"
+    id="size"
+    class="select max-w-[150px]"
+    value={size}
+    onchange={(e) => (size = Number(e.currentTarget.value))}
+  >
+    {#each [3, 6, 9] as v}
+      <option value={v}>Items {v}</option>
+    {/each}
+    <option value={topArtists.length}>Show All</option>
+  </select>
+  <!-- Pagination -->
+  <Pagination
+    data={topArtists}
+    {page}
+    onPageChange={(e) => (page = e.page)}
+    pageSize={size}
+    onPageSizeChange={(e) => (size = e.pageSize)}
+    siblingCount={4}
+  >
+    {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
+    {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
+    {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
+    {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
+    {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+  </Pagination>
+</footer>

@@ -2,89 +2,27 @@
   import { error } from "@sveltejs/kit";
   import { onMount } from "svelte";
   import ProfileData from "$lib/components/analytics/ProfileData.svelte";
-  import TopData from "$lib/components/analytics/TopData.svelte";
+  import TopData from "$lib/components/analytics/topData/TopData.svelte";
+
+  import type { Userdata } from "$lib/types/spotifyTypes1";
+  import { getTopArtists } from "../../api/artists";
+  import { getProfile } from "../../api/profile";
+  import { updateNetworkStatus } from "../../api/shared";
 
   import "../../styles/app.css";
   import LightSwitch from "$lib/components/LightSwitch.svelte";
 
-  interface userdata {
-    country: "string";
-    display_name: "string";
-    email: "string";
-    explicit_content: {
-      filter_enabled: false;
-      filter_locked: false;
-    };
-    external_urls: {
-      spotify: "string";
-    };
-    followers: {
-      href: "string";
-      total: 0;
-    };
-    href: "string";
-    id: "string";
-    images: [
-      {
-        url: "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
-        height: 300;
-        width: 300;
-      },
-    ];
-    product: "string";
-    type: "string";
-    uri: "string";
-  }
+  let profileData: any = $state([]);
 
-  let data: any = $state();
-
-  let topArtistsData: any = $state();
+  let topArtistsData: any = $state([]);
   let loading: boolean = $state(false);
 
-  async function getProfile(accessToken: any) {
-    if (accessToken != "undefined") {
-      const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
-      });
-      if (!response.ok) {
-        const errorText = await response.json(); // or res.text() if error is text
-        throw new Error(`Profile Error [${response.status}]: ${errorText}`);
-      }
-      return await response.json();
-    } else {
-      alert("Access token is undefined");
-    }
-  }
-
-  const getTopArtists = async (accessToken: any) => {
-    if (accessToken != "undefined") {
-      const response = await fetch(
-        "https://api.spotify.com/v1/me/top/artists",
-        {
-          headers: {
-            Authorization: "Bearer " + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        const errorText = await response.json(); // or res.text() if error is a text
-        throw new Error(`Profile Error [${response.status}]: ${errorText}`);
-      }
-      return await response.json();
-    } else {
-      alert("Access token is undefined hopefully");
-    }
-  };
-  /*
   onMount(async () => {
-    console.log("-------------------- ------");
     try {
       loading = true;
       let accessToken: any = localStorage.getItem("access_token");
 
-      [data, topArtistsData] = await Promise.all([
+      [profileData, topArtistsData] = await Promise.all([
         getProfile(accessToken),
         getTopArtists(accessToken),
       ]);
@@ -93,13 +31,14 @@
 
       const errorMsg = err instanceof Error ? err.message : String(err);
       alert(`Error: ${errorMsg}`);
-      console.error("The error message:", errorMsg);
+      console.error("The error message:", error);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
       loading = false;
+      //console.log("Profile data --------- ", profileData);
+      //console.log("Top artists data --------", topArtistsData);
     }
   });
-*/
 
   const filters: string[] = [
     "Top Artists",
@@ -125,7 +64,7 @@
           class="flex justify-between flex-wrap max-w-[1700px] min-w-[200px] w-full pr-10 bg-surface-100 dark:bg-surface-900 mx-auto pl-5 mt-5"
         >
           <div class="max-w-[800px] w-full py-3 flex flex-wrap justify-between">
-            <ProfileData user={data} />
+            <ProfileData user={profileData} />
             <label class="label w-[250px]">
               <span class="label-text text-lg">Category To View</span>
               <select class="select">
@@ -142,7 +81,7 @@
       </div>
       <!-- TOP ARTISTS-->
       <div class="mt-10">
-        <TopData />
+        <TopData topArtists_={topArtistsData} />
       </div>
     {/if}
   </div>

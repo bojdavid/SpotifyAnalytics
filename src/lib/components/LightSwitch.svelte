@@ -1,32 +1,43 @@
-<script lang="ts">
-  import { Switch } from "@skeletonlabs/skeleton-svelte";
-  import IconMoon from "@lucide/svelte/icons/moon";
-  import IconSun from "@lucide/svelte/icons/sun";
+<!-- src/lib/ThemeToggle.svelte -->
+<script>
+  import { onMount } from "svelte";
+  import { Sun, Moon } from "@lucide/svelte";
 
-  let checked = $state(false);
+  let isDarkMode = $state(false);
 
-  $effect(() => {
-    const mode = localStorage.getItem("mode") || "light";
-    checked = mode === "dark";
+  //let { size } = $props();
+  const size = 30;
+
+  onMount(() => {
+    // Check for user's preference in localStorage or system preference
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      isDarkMode = savedTheme === "dark";
+    } else {
+      isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    updateTheme();
   });
 
-  const onCheckedChange = (event: { checked: boolean }) => {
-    const mode = event.checked ? "dark" : "light";
-    document.documentElement.setAttribute("data-mode", mode);
-    localStorage.setItem("mode", mode);
-    checked = event.checked;
-  };
+  function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    updateTheme();
+  }
+
+  function updateTheme() {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }
 </script>
 
-<svelte:head>
-  <script>
-    const mode = localStorage.getItem("mode") || "light";
-    document.documentElement.setAttribute("data-mode", mode);
-  </script>
-</svelte:head>
-
-<div class="flex gap-1">
-  <IconSun />
-  <Switch {checked} {onCheckedChange} controlActive="bg-secondary-900"></Switch>
-  <IconMoon />
-</div>
+<button onclick={toggleTheme}>
+  {#if isDarkMode}
+    <Sun {size} />
+  {:else}
+    <Moon {size} />
+  {/if}
+</button>
