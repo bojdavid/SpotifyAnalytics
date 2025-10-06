@@ -16,19 +16,24 @@
 
 <div class="flex w-full gap-0">
   <section
-    class=" xl:min-h-[832px] h-screen max-h-[1000px] w-[260px] bg-secondary-200 dark:bg-secondary-950 pr-5 relative shadow-lg p-3"
+    class=" h-screen max-h-[1000px] w-[260px] bg-secondary-200 dark:bg-secondary-950 pr-5 relative shadow-lg p-3"
   >
     <button class="absolute right-2 md:hidden" onclick={closeSideBar}>
       <X size={40} />
     </button>
     <div class="text-2xl py-10 h-full flex flex-col justify-between">
-      <header>header</header>
+      <header>
+        header<br />
+        {page.url.pathname}
+        {page.route.id}
+      </header>
       <main class="flex flex-col gap-5 pt-20 flex-grow">
         {#each routes as route}
           <a
             href={route.route}
-            class=" px-2 py-1 {page.url.pathname == route.route
-              ? 'bg-light-primary-accent rounded-lg '
+            class=" px-2 py-1 hover:bg-secondary-500 transition duration-400 ease-in-out rounded-lg {page
+              .url.pathname == route.route
+              ? 'bg-secondary-50 dark:bg-secondary-700  '
               : ''}">{route.name}</a
           >
         {/each}

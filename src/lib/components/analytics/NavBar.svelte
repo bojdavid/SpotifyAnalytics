@@ -4,7 +4,7 @@
 </script>
 
 <nav
-  class=" flex justify-between px-5 pt-5 sticky top-0 z-10 bg-white/30 backdrop-blur w-full"
+  class=" flex justify-between px-5 pt-5 fixed top-0 bg-white/30 backdrop-blur w-full z-50 h-30"
 >
   <div>
     <div class="flex gap-2 items-center">
@@ -12,13 +12,10 @@
         Welcome {username}
       </h4>
       <div class="rounded-full overflow-hidden">
-        <img
-          src={imageUrl.url}
-          alt="profile piture of {username} rounded-full"
-        />
+        <img src={imageUrl.url} alt="profile piture of {username}" />
       </div>
     </div>
-    <p>{country}, {email}</p>
+    <p class="text-xs text-surface-200">{country} <span>||</span> {email}</p>
   </div>
   <div class="flex gap-5 justify-end items-center">
     <input

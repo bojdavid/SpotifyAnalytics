@@ -36,7 +36,7 @@
 </script>
 
 <section
-  class="max-w-[2000px] mx-auto overflow-x-hidden overflow-y-display xl:min-h-[832px] h-screen flex relative w-full"
+  class="max-w-[2000px] mx-auto overflow-x-hidden overflow-y-display flex relative w-full"
 >
   <!-- Side Bar -->
   <div class="md:hidden">
@@ -55,14 +55,14 @@
   <!-- Side Bar-->
   <div class="hidden md:block">
     <aside class=" w-[260px]">
-      <div class=" w-full fixed inset-y-0 left-0 z-50">
+      <div class=" w-full fixed inset-y-0 left-0">
         <Sidebar {closeSideBar} />
       </div>
     </aside>
   </div>
   <!-- End Of Sidebar-->
 
-  <main class="w-full">
+  <main class="w-full z-10 pt-40">
     <NavBar
       username={userData.display_name}
       country={userData.country}

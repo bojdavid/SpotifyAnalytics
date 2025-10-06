@@ -54,7 +54,7 @@
   const range = Array.from({ length: 5 }, (_, i) => i + 1);
 </script>
 
-<main class="mx-4">
+<main class="mx-4 z-50">
   <div>
     {#if loading}
       <div>Loading</div>
@@ -65,20 +65,21 @@
         >
           <div class="max-w-[800px] w-full py-3 flex flex-wrap justify-between">
             <ProfileData user={profileData} />
-            <label class="label w-[250px]">
-              <span class="label-text text-lg">Category To View</span>
-              <select class="select">
-                {#each filters as filter, i}
-                  <option value={i}> {filter}</option>
-                {/each}
-              </select>
-            </label>
           </div>
           <div class=" p-5">
             <LightSwitch />
           </div>
         </div>
       </div>
+      <!-- CATEGORY OPTION -->
+      <label class="label w-[250px]">
+        <span class="label-text text-lg">Category To View</span>
+        <select class="select">
+          {#each filters as filter, i}
+            <option value={i}> {filter}</option>
+          {/each}
+        </select>
+      </label>
       <!-- TOP ARTISTS-->
       <div class="mt-10">
         <TopData topArtists_={topArtistsData} />
