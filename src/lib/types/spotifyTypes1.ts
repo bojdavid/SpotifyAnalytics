@@ -22,7 +22,7 @@ interface userDataImageType {
         width: number;
       }
 
-  export   interface TopArtists {
+  export   interface TopArtistsType {
     name: string;
     image: {
       url: string;
@@ -35,19 +35,62 @@ interface userDataImageType {
     uri: string; //The Spotify URI for the artist.
   }
 
-  export interface TrackArtistsData {
-    artistsName: string;
-    id: string;
-    href: string; // A link to the Web API endpoint providing full details of the artist.
-    uri: string; // The Spotify URI for the artist.
+  export interface SpotifyApiError{
+    status:number;
+    message:string;
   }
 
-  export interface TopTracks {
-    artists: TrackArtistsData[];
-    availableMarkets: string[]; // a list of countries the song is playable in
-    duration: number;
-    explicit: boolean;
-    link_to_track: string;
-    popularity: number; // how much you have listened to the song i guess
-    is_local: boolean; // whether the file is from a local stroge
-  }
+  // TypeScript Interfaces
+interface ExternalUrls {
+  spotify: string;
+}
+
+interface ExternalIds {
+  isrc: string;
+}
+
+interface Artist {
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  name: string;
+  type: string;
+  uri: string;
+}
+
+interface Album {
+  album_type: string;
+  artists: Artist[];
+  available_markets: string[];
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  images: { url: string; height: number; width: number }[];
+  name: string;
+  release_date: string;
+  release_date_precision: string;
+  total_tracks: number;
+  type: string;
+  uri: string;
+}
+
+export interface SpotifyTrack {
+  album: Album;
+  artists: Artist[];
+  available_markets: string[];
+  disc_number: number;
+  duration_ms: number;
+  explicit: boolean;
+  external_ids: ExternalIds;
+  external_urls: ExternalUrls;
+  href: string;
+  id: string;
+  is_local: boolean;
+  is_playable: boolean;
+  name: string;
+  popularity: number;
+  preview_url: string | null;
+  track_number: number;
+  type: string;
+  uri: string;
+}

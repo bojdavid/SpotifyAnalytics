@@ -6,10 +6,11 @@
   import { getProfile } from "../../api/profile";
   import NavBar from "$lib/components/analytics/NavBar.svelte";
   import { userData, setUserData } from "$lib/global/userData.svelte";
+  import { goto } from "$app/navigation";
 
   let openSideBar = $state(true);
 
-  const closeSideBar = () => {
+  const toggleSideBar = () => {
     openSideBar = !openSideBar;
     console.log(openSideBar);
   };
@@ -25,8 +26,14 @@
       try {
         let res = await getProfile(accessToken);
         userProfile = res;
-      } catch (err) {
-        console.error("The error message", err);
+      } catch (err: any) {
+        const strError = JSON.parse(err.message);
+
+        if (strError.status == 401) {
+          alert(`user is unAuthorized : , ${strError.message}`);
+          goto("/auth");
+        }
+        console.error("The error message", strError);
       } finally {
         setUserData(userProfile);
         //console.log("user data after set data------ ", userData);
@@ -45,34 +52,49 @@
         ? ' -translate-x-full opacity-0  '
         : ' translate-x-0 opacity-100 fixed'} absolute overflow-y-auto z-50"
     >
-      <Sidebar {closeSideBar} />
+      <Sidebar
+        closeSideBar={toggleSideBar}
+        username={userData.display_name}
+        imageUrl={userData.images[1]}
+      />
     </aside>
-
-    <button class="" onclick={closeSideBar}>Open</button>
   </div>
   <!-- End of side bar for small screens-->
 
   <!-- Side Bar-->
   <div class="hidden md:block">
-    <aside class=" w-[260px]">
-      <div class=" w-full fixed inset-y-0 left-0">
-        <Sidebar {closeSideBar} />
-      </div>
+    <aside class=" w-[260px] fixed inset-y-0 z-50">
+      <Sidebar
+        closeSideBar={toggleSideBar}
+        username={userData.display_name}
+        imageUrl={userData.images[1]}
+      />
     </aside>
   </div>
   <!-- End Of Sidebar-->
 
-  <main class="w-full z-10 pt-40">
-    <NavBar
-      username={userData.display_name}
-      country={userData.country}
-      email={userData.email}
-      imageUrl={userData.images[1]}
-    />
-    {#if !isOffline}
-      {@render children?.()}
-    {:else}
-      <div class="text-red-500 text-4xl">No network, try again later</div>
-    {/if}
-  </main>
+  <div
+    class="w-full min-h-screen z-10"
+    style="background-image: url({userData.images[0].url}); 
+          background-size: cover; 
+          background-position: center;
+          background-attachment: fixed;"
+  >
+    <main
+      class="md:pl-[260px] w-auto z-10 bg-surface-50/50 dark:bg-surface-800/50 backdrop-blur-lg"
+    >
+      <NavBar
+        username={userData.display_name}
+        country={userData.country}
+        email={userData.email}
+        imageUrl={userData.images[1]}
+        {toggleSideBar}
+      />
+      {#if !isOffline}
+        {@render children?.()}
+      {:else}
+        <div class="text-red-500 text-4xl">No network, try again later</div>
+      {/if}
+    </main>
+  </div>
 </section>

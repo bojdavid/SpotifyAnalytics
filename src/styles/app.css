@@ -9,3 +9,27 @@
 
 @source '../../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
+@theme {
+    --color-spotify-green: #1DB954;
+    --color-spotify-black: #191414;
+}
+
+h1 {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.25rem, 2.5vw, 2.25rem);
+}
+
+h3 {
+    font-size: clamp(1rem, 2vw, 1.875rem);
+}
+
+h4 {
+    font-size: clamp(0.875rem, 1.8vw, 1.5rem);
+}
+
+h5 {
+    font-size: clamp(0.75rem, 1.5vw, 1.25rem);
+}
