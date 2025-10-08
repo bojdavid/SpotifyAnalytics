@@ -6,6 +6,7 @@
   import IconEllipsis from "@lucide/svelte/icons/ellipsis";
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
+  import Ellipsis from "@lucide/svelte/icons/ellipsis";
 
   import type { TopArtistsType } from "$lib/types/spotifyTypes1";
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
@@ -28,7 +29,7 @@
     s.slice((page - 1) * size, page * size)
   );
 
-  const fields: string[] = ["Artists", "Followers", "Genres", "Actions"];
+  const fields: string[] = ["Artists", "Followers", "Genres", "Actions", ""];
 
   const formatFollowerCount = (count: number) => {
     if (count < 1000) {
@@ -58,9 +59,14 @@
             <td class={tdClass}>{artists.genres}</td>
             <td class={tdClass}>
               <a href={artists.uri} class="text-spotify-green !text-right">
-                Ooen in spotify</a
+                Open in spotify</a
               ></td
             >
+            <td class={tdClass}>
+              <button>
+                <Ellipsis />
+              </button>
+            </td>
           </tr>
         {/each}
       </tbody>

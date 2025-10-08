@@ -8,6 +8,7 @@
   import IconEllipsis from "@lucide/svelte/icons/ellipsis";
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
+  import Ellipsis from "@lucide/svelte/icons/ellipsis";
 
   let { topTracks_ } = $props();
   //console.log("Top tracks, ", topTracks);
@@ -94,6 +95,11 @@
             >
               Open in Spotify
             </a>
+          </td>
+          <td class={tdClass}>
+            <button>
+              <Ellipsis />
+            </button>
           </td>
         </tr>
       {/each}

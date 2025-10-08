@@ -11,7 +11,10 @@
         Welcome {username}
       </h4>
     </div>
-    <h5 class=" text-surface-200">{country} <span>||</span> {email}</h5>
+    <p class=" text-surface-200 text-[8px] md:text-xs">
+      {country} <span>||</span>
+      {email}
+    </p>
   </div>
   <div class="flex gap-5 justify-end items-center">
     <input

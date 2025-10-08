@@ -7,6 +7,7 @@
   import NavBar from "$lib/components/analytics/NavBar.svelte";
   import { userData, setUserData } from "$lib/global/userData.svelte";
   import { goto } from "$app/navigation";
+  import "../../styles/app.css";
 
   let openSideBar = $state(true);
 

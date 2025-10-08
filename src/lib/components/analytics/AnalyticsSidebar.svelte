@@ -9,9 +9,10 @@
     route: string;
   }
   let routes: sideBarRoutes[] = [
-    { name: "Top Data", route: "/analytics" },
+    { name: "Home", route: "/analytics" },
+    { name: "Top Data", route: "/analytics/top" },
     { name: "Playlists", route: "/analytics/playlists" },
-    { name: "dunno yet", route: "/analytics" },
+    { name: "Audio Analysis", route: "/analytics/audio-analysis" },
   ];
 </script>
 
@@ -45,7 +46,8 @@
           >
         {/each}
       </main>
-      <footer class="mt-auto mb-6">
+      <footer class="mt-auto mb-6 flex flex-col">
+        <a href="/analytics/settings" class="">Settings</a>
         <a href="./" class="text-red-500">Logout</a>
       </footer>
     </div>
