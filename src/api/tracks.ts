@@ -77,3 +77,7 @@ export const getRecentTracks = async (accessToken: any) =>{
     }
  
 }
+
+const getArtistTracks = () => {
+  console.log("Getting artist tracks")
+}

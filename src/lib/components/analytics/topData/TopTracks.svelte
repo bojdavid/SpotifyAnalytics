@@ -2,6 +2,7 @@
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
   import { tdClass } from "$lib/utils/table";
   import { Pagination } from "@skeletonlabs/skeleton-svelte";
+  import Modal from "$lib/components/common/Modal.svelte";
   // Icons
   import IconArrowLeft from "@lucide/svelte/icons/arrow-left";
   import IconArrowRight from "@lucide/svelte/icons/arrow-right";
@@ -97,9 +98,13 @@
             </a>
           </td>
           <td class={tdClass}>
-            <button>
-              <Ellipsis />
-            </button>
+            <Modal cardType="track" actionName="..." />
+            <!--
+          
+              <button>
+                <Ellipsis />
+              </button>
+            -->
           </td>
         </tr>
       {/each}

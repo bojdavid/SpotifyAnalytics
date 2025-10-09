@@ -1,13 +1,13 @@
 <script lang="ts">
+  import Modal from "$lib/components/common/Modal.svelte";
 </script>
 
 <section>
   <header class="text-xl">Playlists page</header>
-  <button
-    onclick={() => {
-      console.log("it is working");
-    }}
-  >
-    click me
-  </button>
+</section>
+
+<section>
+  This is the modal
+
+  <Modal cardType="track" actionName="View Tracks" />
 </section>

@@ -12,6 +12,8 @@
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
   import { tdClass } from "$lib/utils/table";
 
+  import Modal from "$lib/components/common/Modal.svelte";
+
   let { topArtists_ } = $props();
 
   // console.log("topArtisitData", topArtists_);
@@ -63,9 +65,7 @@
               ></td
             >
             <td class={tdClass}>
-              <button>
-                <Ellipsis />
-              </button>
+              <Modal cardType="artist" actionName="..." />
             </td>
           </tr>
         {/each}
