@@ -3,8 +3,9 @@
   import { onMount } from "svelte";
   import { getTopArtists } from "../../api/artists";
   import { getTopTracks, getRecentTracks } from "../../api/tracks";
-  import type { SpotifyTrack, TopArtistsType } from "$lib/types/spotifyTypes1";
   import { goto } from "$app/navigation";
+
+  import { setCurrentTop, type TopFilter } from "$lib/global/filter.svelte";
 
   let topTracksData: any = $state([]);
   let topArtistsData: any = $state([]);
@@ -25,12 +26,12 @@
       loading = false;
       err = JSON.parse(err.message);
       if (err.status == 401) {
-        alert(`user is unAuthorized : , ${err.message}`);
+        //alert(`user is unAuthorized : , ${err.message}`);
         goto("/auth");
         return;
       }
 
-      alert(`Error: ${JSON.stringify(err)}`);
+      alert(`Error: ${err.message}`);
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
@@ -40,8 +41,9 @@
     }
   });
 
-  const action = () => {
-    console.log("bleeeh");
+  const viewMore = (data: TopFilter) => {
+    setCurrentTop(data);
+    goto("/analytics/top");
   };
 </script>
 
@@ -53,22 +55,22 @@
       <TopCard
         title="Top 10 Tracks"
         data={topTracksData.items.slice(0, 10)}
-        {action}
-        type="track"
+        action={viewMore}
+        type="top-tracks"
         background="spotify-green"
       />
       <TopCard
         title="Top 10  Artists"
         data={topArtistsData.items.slice(0, 10)}
-        {action}
-        type="artist"
+        action={viewMore}
+        type="top-artists"
         background="spotify-green"
       />
       <TopCard
         title="Recently Played Tracks"
         data={recentTracksData.items.slice(0, 10)}
-        {action}
-        type="recent"
+        action={viewMore}
+        type="top-recent"
         background="spotify-black/50"
       />
     </div>

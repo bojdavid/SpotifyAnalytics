@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit";
   import { onMount } from "svelte";
   import TopArtists from "$lib/components/analytics/topData/TopArtists.svelte";
-
-  import type { Userdata } from "$lib/types/spotifyTypes1";
   import type { SpotifyTrack, TopArtistsType } from "$lib/types/spotifyTypes1";
   import { getTopArtists } from "../../../api/artists";
-  import { getTopTracks } from "../../../api/tracks";
-  import { updateNetworkStatus } from "../../../api/shared";
-
-  import LightSwitch from "$lib/components/LightSwitch.svelte";
+  import { getTopTracks, getRecentTracks } from "../../../api/tracks";
   import TopTracks from "$lib/components/analytics/topData/TopTracks.svelte";
+  import RecentTracks from "$lib/components/analytics/topData/RecentTracks.svelte";
+
+  import {
+    getCurrentTop,
+    getFilterStringFromType,
+  } from "$lib/global/filter.svelte";
 
   import { goto } from "$app/navigation";
 
   let topTracksData: SpotifyTrack[] = $state([]);
-
   let topArtistsData: TopArtistsType[] = $state([]);
+  let recentTracksData = $state([]);
   let loading: boolean = $state(false);
 
   onMount(async () => {
@@ -24,9 +24,10 @@
       loading = true;
       let accessToken: any = localStorage.getItem("access_token");
 
-      [topTracksData, topArtistsData] = await Promise.all([
+      [topTracksData, topArtistsData, recentTracksData] = await Promise.all([
         getTopTracks(accessToken),
         getTopArtists(accessToken),
+        getRecentTracks(accessToken),
       ]);
     } catch (err: any) {
       loading = false;
@@ -42,13 +43,20 @@
       //Redirect back to the auth page if accessToken has expired.
     } finally {
       loading = false;
-      console.log("Profile data --------- ", topTracksData);
+      console.log("recent tracks --------- ", recentTracksData);
       //console.log("Top artists data --------", topArtistsData);
     }
   });
 
-  const filters: string[] = ["Top Artists", "Top Tracks", "Random Song"];
-  let category: string = $state("Top Artists");
+  const filters: string[] = [
+    "Top Artists",
+    "Top Tracks",
+    "Random Song",
+    "Top Recent",
+    "Unknown",
+  ];
+
+  let category: string = $state(getFilterStringFromType(getCurrentTop()));
 </script>
 
 <main class="px-2">
@@ -74,6 +82,11 @@
         <!-- Top Tracks -->
         <div class="mt-10">
           <TopTracks topTracks_={topTracksData} />
+        </div>
+      {:else if category == "Top Recent"}
+        <!-- Top Tracks -->
+        <div class="mt-10">
+          <RecentTracks recentTracks_={recentTracksData} />
         </div>
       {/if}
     {/if}
