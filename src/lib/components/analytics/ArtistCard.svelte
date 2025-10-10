@@ -1,6 +1,7 @@
 <script lang="ts">
   import { X, UserPlus } from "@lucide/svelte";
-  const genres = ["genre1", "genre2", "genre3", "genre4", "genre5"];
+  import { formatFollowerCount } from "$lib/global/functions";
+
   const longSongTitles = [
     {
       title:
@@ -47,15 +48,17 @@
     },
   ];
 
-  let {} = $props();
+  let { artistData } = $props();
+  console.log("This is the artistsData", artistData);
 </script>
 
 <article class=" min-w-[250px] max-w-[600px] w-full px-5">
   <header class="flex gap-5 justify-between pt-5">
     <div>
-      <h2>Artist Name</h2>
+      <h2>{artistData.name}</h2>
       <p class="text-xs">
-        <span class="font-light text-surface-400">Followers : </span> 20
+        <span class="font-light text-surface-400">Followers : </span>
+        {formatFollowerCount(artistData.followers.total)}
       </p>
       <button
         class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
@@ -70,15 +73,21 @@
 
   <!-- Image container -->
   <div
-    class="border-2 border-spotify-green rounded-full w-40 h-40 md:w-60 md:h-60 mx-auto shadow-lg shadow-spotify-green hover:shadow-xl transition duration-300 ease-in-out"
-  ></div>
-  <p class="text-center mt-5">popularity: 60%</p>
+    class="border-2 border-spotify-green rounded-full w-40 h-40 md:w-60 md:h-60 mx-auto shadow-lg shadow-spotify-green hover:shadow-xl transition duration-300 ease-in-out overflow-hidden"
+  >
+    <img
+      src={artistData.images[1].url}
+      alt={artistData.name}
+      class="w-full h-full cover"
+    />
+  </div>
+  <p class="text-center mt-5">popularity: {artistData.popularity}</p>
 
   <!-- Genre Container -->
   <div>
     <h4>Genres</h4>
     <div class="flex gap-2 flex-wrap">
-      {#each genres as genre}
+      {#each artistData.genres as genre}
         <div
           class="border-1 border-spotify-green rounded-sm px-3 text-xs sm:text-sm md:text-md"
         >
@@ -106,10 +115,12 @@
 
   <!-- Actions-->
   <div class="flex justify-end mt-5">
-    <button
+    <a
+      href={artistData.uri}
+      target="_blank"
       class="text-spotify-green font-bold px-5 py-2 rounded-lg flex text-sm"
     >
       Open In Spotify
-    </button>
+    </a>
   </div>
 </article>

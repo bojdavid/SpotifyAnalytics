@@ -11,6 +11,7 @@
   import type { TopArtistsType } from "$lib/types/spotifyTypes1";
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
   import { tdClass } from "$lib/utils/table";
+  import { formatFollowerCount } from "$lib/global/functions";
 
   import Modal from "$lib/components/common/Modal.svelte";
 
@@ -32,16 +33,6 @@
   );
 
   const fields: string[] = ["Artists", "Followers", "Genres", "Actions", ""];
-
-  const formatFollowerCount = (count: number) => {
-    if (count < 1000) {
-      return count.toString();
-    } else if (count < 1000000) {
-      return (Math.round(count / 100) / 10).toFixed(2) + "k";
-    } else {
-      return (Math.round(count / 100000) / 10).toFixed(2) + "M";
-    }
-  };
 </script>
 
 <div>
@@ -65,7 +56,7 @@
               ></td
             >
             <td class={tdClass}>
-              <Modal cardType="artist" actionName="..." />
+              <Modal cardType="artist" actionName="..." cardData={artists} />
             </td>
           </tr>
         {/each}

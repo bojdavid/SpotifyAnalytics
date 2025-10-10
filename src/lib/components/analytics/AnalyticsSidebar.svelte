@@ -38,6 +38,7 @@
       <main class="flex flex-col gap-5 pt-20 flex-grow">
         {#each routes as route}
           <a
+            onclick={closeSideBar}
             href={route.route}
             class=" px-2 py-1 hover:bg-spotify-black/50 transition duration-400 ease-in-out rounded-lg {page
               .url.pathname == route.route

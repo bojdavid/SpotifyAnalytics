@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { X } from "@lucide/svelte";
-  import ArtistCard from "$lib/components/analytics/ArtistCard.svelte";
-  import TrackCard from "$lib/components/analytics/TrackCard.svelte";
-
+  import { X, Search } from "@lucide/svelte";
   import { scale } from "svelte/transition";
   import { tick } from "svelte";
-
-  let { cardType, actionName, cardData } = $props();
+  import SearchComponent from "./SearchComponent.svelte";
 
   let dialogRef: HTMLDialogElement;
   let visible = $state(false); // controls transition of inner panel
@@ -37,33 +33,34 @@
 </script>
 
 <section>
-  <button onclick={openDialog}> {actionName} </button>
+  <button
+    onclick={openDialog}
+    class="flex min-w-sm max-w-md w-full border-1 border-surface-200 rounded-lg px-3 py-1"
+  >
+    <Search size={20} /> Search
+  </button>
 
   <dialog
     bind:this={dialogRef}
     onclick={handleBackdropClick}
-    class=" m-auto bg-transparent"
+    class=" mx-auto bg-transparent mt-5"
     onkeydown={(e) => e.key === "Escape" && dialogRef?.close()}
   >
     {#if visible}
       <div
-        class="bg-white/80 dark:bg-spotify-black/50 backdrop-blur w-full rounded-lg"
+        class="bg-white/80 dark:bg-spotify-black/50 backdrop-blur rounded-lg"
         transition:scale={{ duration: 300, start: 0.8 }}
         onoutroend={handleOutroEnd}
       >
+        <!--
         <button
           class="float-right text-red-500 float-right float-top"
           onclick={closeDialog}
         >
           <X size={40} />
         </button>
-        {#if cardType == "artist"}
-          <ArtistCard artistData={cardData} />
-        {:else if cardType == "track"}
-          <TrackCard trackData={cardData} />
-        {:else}
-          <h1 class="text-center">Card does not exist</h1>
-        {/if}
+      -->
+        <SearchComponent />
       </div>
     {/if}
   </dialog>

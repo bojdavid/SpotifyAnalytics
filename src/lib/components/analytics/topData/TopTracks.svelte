@@ -98,7 +98,7 @@
             </a>
           </td>
           <td class={tdClass}>
-            <Modal cardType="track" actionName="..." />
+            <Modal cardType="track" actionName="..." cardData={track} />
             <!--
           
               <button>
