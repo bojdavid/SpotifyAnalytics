@@ -9,28 +9,30 @@
   import IconEllipsis from "@lucide/svelte/icons/ellipsis";
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
-  import Ellipsis from "@lucide/svelte/icons/ellipsis";
+
+  import { ArrowDownNarrowWide } from "@lucide/svelte";
+  import { formatDuration } from "$lib/global/functions";
+  import sortArray from "sort-array";
 
   let { topTracks_ } = $props();
-  //console.log("Top tracks, ", topTracks);
 
-  // Utility function to format duration
-  const formatDuration = (ms: number): string => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
+  let topTracks = $state([]);
+  $effect(() => {
+    topTracks = topTracks_.items.map((track: any, index: number) => ({
+      ...track,
+      rank: index + 1,
+    }));
+    //topTracks = topTracks_.items;
+  });
 
   const fields: string[] = [
-    "S/N",
+    "Rank",
     "Track",
     "Artist(s)",
     "Duration",
     "Popularity",
     "Actions",
   ];
-
-  let topTracks = $state([]);
 
   // State
   let page = $state(1);
@@ -39,22 +41,63 @@
     s.slice((page - 1) * size, page * size)
   );
 
-  $effect(() => {
-    topTracks = topTracks_.items;
-  });
+  //Filters
+  const filter = [
+    { name: "Rank", path: "rank" },
+    { name: "Track", path: "name" },
+    { name: "Duration", path: "duration_ms" },
+    { name: "Popularity", path: "popularity" },
+  ];
+
+  let isAscending = $state(true);
+  let activeFilter = $state(filter[0]);
+
+  function onFilterChange(e: Event) {
+    const selectedName = (e.target as HTMLSelectElement).value;
+    activeFilter = filter.find((f) => f.name === selectedName) ?? filter[0];
+    applySort();
+  }
+
+  function toggleAscDesc() {
+    isAscending = !isAscending;
+    applySort();
+  }
+
+  function applySort() {
+    topTracks = sortArray(topTracks, {
+      by: activeFilter.path,
+      order: isAscending ? "asc" : "desc",
+    });
+  }
 </script>
 
+<div>
+  <label for="filter" class="mr-2">Sort by:</label>
+  <select id="filter" onchange={onFilterChange} bind:value={activeFilter.name}>
+    {#each filter as f}
+      <option value={f.name}>{f.name}</option>
+    {/each}
+  </select>
+  <button
+    class="transform {isAscending
+      ? 'rotate-180'
+      : ''} transition-all duration-300 ease-in-out"
+    onclick={() => toggleAscDesc()}
+  >
+    <ArrowDownNarrowWide size={30} />
+  </button>
+</div>
 <div class=" rounded-lg shadow-lg w-full overflow-x-auto">
   <table class="w-full divide-y divide-gray-200">
     <TableHeadSnippet {fields} />
     <tbody class=" divide-y divide-gray-200">
-      {#each slicedSource(topTracks) as track, idx}
+      {#each slicedSource(topTracks) as track}
         <tr
           class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
         >
           <td class={tdClass}>
             <p class="text-lg">
-              {idx + 1}
+              {track.rank}
             </p>
           </td>
           <td class={tdClass}>

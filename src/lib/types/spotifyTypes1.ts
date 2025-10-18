@@ -24,6 +24,7 @@ interface userDataImageType {
 
   export   interface TopArtistsType {
     name: string;
+    rank?: number;
     image: {
       url: string;
       height: number;

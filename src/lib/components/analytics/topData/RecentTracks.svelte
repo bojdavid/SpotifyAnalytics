@@ -9,20 +9,15 @@
   import IconEllipsis from "@lucide/svelte/icons/ellipsis";
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
-  import Ellipsis from "@lucide/svelte/icons/ellipsis";
+  import { ArrowDownNarrowWide } from "@lucide/svelte";
+  import { formatDuration } from "$lib/global/functions";
+  import sortArray from "sort-array";
 
   let { recentTracks_ } = $props();
   //console.log("Top tracks, ", topTracks);
 
-  // Utility function to format duration
-  const formatDuration = (ms: number): string => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
   const fields: string[] = [
-    "S/N",
+    "Rank",
     "Track",
     "Artist(s)",
     "Duration",
@@ -40,33 +35,92 @@
   );
 
   $effect(() => {
-    recentTracks = recentTracks_.items;
+    recentTracks = recentTracks_.items.map((track: any, index: number) => ({
+      ...track,
+      rank: index + 1,
+    }));
+    //recentTracks = recentTracks_.items;
   });
+  console.log("THis is the recentr", $state.snapshot(recentTracks_));
+
+  //Filters
+  const filter = [
+    { name: "Rank", path: "rank" },
+    { name: "Track", path: "track.name" },
+    { name: "Duration", path: "track.duration_ms" },
+    { name: "Popularity", path: "track.popularity" },
+  ];
+
+  let isAscending = $state(true);
+  let activeFilter = $state(filter[0]);
+
+  function onFilterChange(e: Event) {
+    const selectedName = (e.target as HTMLSelectElement).value;
+    activeFilter = filter.find((f) => f.name === selectedName) ?? filter[0];
+    applySort();
+  }
+
+  function toggleAscDesc() {
+    isAscending = !isAscending;
+    applySort();
+  }
+
+  function applySort() {
+    recentTracks = sortArray(recentTracks, {
+      by: activeFilter.path,
+      order: isAscending ? "asc" : "desc",
+    });
+  }
 </script>
 
+<div>
+  <label for="filter" class="mr-2">Sort by:</label>
+  <select id="filter" onchange={onFilterChange} bind:value={activeFilter.name}>
+    {#each filter as f}
+      <option value={f.name}>{f.name}</option>
+    {/each}
+  </select>
+  <button
+    class="transform {isAscending
+      ? 'rotate-180'
+      : ''} transition-all duration-300 ease-in-out"
+    onclick={() => toggleAscDesc()}
+  >
+    <ArrowDownNarrowWide size={30} />
+  </button>
+</div>
 <div class=" rounded-lg shadow-lg w-full overflow-x-auto">
   <table class="w-full divide-y divide-gray-200">
     <TableHeadSnippet {fields} />
     <tbody class=" divide-y divide-gray-200">
-      {#each slicedSource(recentTracks) as recentT, idx}
+      {#each slicedSource(recentTracks) as recentT}
         <tr
           class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
         >
           <td class={tdClass}>
-            <p class="text-lg">
-              {idx + 1}
-            </p>
+            <p class="text-lg text-center">{recentT.rank}</p>
+          </td>
+          <td class="{tdClass} flex gap-2">
+            <div class="">
+              <img
+                src={recentT.track.album.images[2].url}
+                alt={recentT.track.name}
+                loading="lazy"
+                class="cover rounded-full w-10 h-10"
+              />
+            </div>
+            <div class="text-sm font-medium my-auto">
+              {recentT.track.name}
+            </div>
           </td>
           <td class={tdClass}>
-            <div class="text-sm font-medium">{recentT.track.name}</div>
-            <div class="text-xs text-gray-500">ID: {recentT.track.id}</div>
-          </td>
-          <td class={tdClass}>
-            <div class="text-sm">
+            <div class="text-sm flex">
               {#each recentT.track.artists as artist, idx}
-                <span>
+                <span class="flex">
                   {artist.name}
-                  {idx < recentT.track.artists.length - 1 && ", "}
+                  <div
+                    class="w-2 h-2 bg-spotify-green rounded-full my-auto mx-1"
+                  ></div>
                 </span>
               {/each}
             </div>

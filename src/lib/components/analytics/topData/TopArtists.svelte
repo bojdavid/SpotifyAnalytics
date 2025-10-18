@@ -6,7 +6,7 @@
   import IconEllipsis from "@lucide/svelte/icons/ellipsis";
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
-  import Ellipsis from "@lucide/svelte/icons/ellipsis";
+  import { ArrowDownNarrowWide } from "@lucide/svelte";
 
   import type { TopArtistsType } from "$lib/types/spotifyTypes1";
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
@@ -14,15 +14,18 @@
   import { formatFollowerCount } from "$lib/global/functions";
 
   import Modal from "$lib/components/common/Modal.svelte";
+  import sortArray from "sort-array";
 
   let { topArtists_ } = $props();
-
-  // console.log("topArtisitData", topArtists_);
 
   let topArtists: TopArtistsType[] = $state([]);
 
   $effect(() => {
-    topArtists = topArtists_.items;
+    topArtists = topArtists_.items.map((artist: any, index: number) => ({
+      ...artist,
+      rank: index + 1,
+    }));
+    //topArtists = topArtists_.items;
   });
 
   // State
@@ -32,9 +35,61 @@
     s.slice((page - 1) * size, page * size)
   );
 
-  const fields: string[] = ["Artists", "Followers", "Genres", "Actions", ""];
+  const fields: string[] = [
+    "Rank",
+    "Artists",
+    "Followers",
+    "Genres",
+    "Actions",
+    "",
+  ];
+
+  //Filters
+  const filter = [
+    { name: "Rank", path: "rank" },
+    { name: "Artists", path: "name" },
+    { name: "Followers", path: "followers.total" },
+    { name: "Popularity", path: "popularity" },
+  ];
+
+  let isAscending = $state(true);
+  let activeFilter = $state(filter[0]);
+
+  function onFilterChange(e: Event) {
+    const selectedName = (e.target as HTMLSelectElement).value;
+    activeFilter = filter.find((f) => f.name === selectedName) ?? filter[0];
+    applySort();
+  }
+
+  function toggleAscDesc() {
+    isAscending = !isAscending;
+    applySort();
+  }
+
+  function applySort() {
+    topArtists = sortArray(topArtists, {
+      by: activeFilter.path,
+      order: isAscending ? "asc" : "desc",
+    });
+  }
 </script>
 
+<div>
+  <label for="filter" class="mr-2">Sort by:</label>
+  <select id="filter" onchange={onFilterChange} bind:value={activeFilter.name}>
+    {#each filter as f}
+      <option value={f.name}>{f.name}</option>
+    {/each}
+  </select>
+  <button
+    class="transform {isAscending
+      ? 'rotate-180'
+      : ''} transition-all duration-300 ease-in-out"
+    onclick={() => toggleAscDesc()}
+  >
+    <ArrowDownNarrowWide size={30} />
+  </button>
+</div>
 <div>
   <div class="table-wrap overflow-x-auto">
     <table class="table caption-bottom">
@@ -43,6 +98,7 @@
       <tbody class="[&>tr]:hover:bg-surface-500/80">
         {#each slicedSource(topArtists) as artists}
           <tr>
+            <td class={tdClass}>{artists.rank}</td>
             <td class={tdClass}>
               {artists.name}
             </td>

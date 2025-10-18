@@ -1,4 +1,6 @@
 <script>
 </script>
 
-<div>Audion Analysis</div>
+<section class="h-screen">
+  <h1>Audio Analysis</h1>
+</section>

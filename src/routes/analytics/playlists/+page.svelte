@@ -1,13 +1,7 @@
 <script lang="ts">
-  import Modal from "$lib/components/common/Modal.svelte";
 </script>
 
-<section>
+<section class="h-screen">
   <header class="text-xl">Playlists page</header>
-</section>
-
-<section>
-  This is the modal
-
-  <Modal cardType="track" actionName="View Tracks" />
+  <h1>Playlists</h1>
 </section>

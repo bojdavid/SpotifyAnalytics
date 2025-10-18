@@ -223,3 +223,33 @@ XK: "Kosovo"
 export const getCountryName = (code: string): string | undefined => {
   return countryNames[code];
 };
+
+export const convertQueriesToEncodedString = (
+    queries: {type:string, use:boolean}[]
+  ): string => {
+    // Filter out the queries where `use` is true
+    const usedTypes = queries
+      .filter((query) => query.use)
+      .map((query) => query.type);
+    // Join the types with a comma and URL-encode the result
+    const queryString = encodeURIComponent(usedTypes.join(","));
+    return queryString;
+  };
+
+  
+  export const convertToQueryArray = (query:string) => {
+    // Decode the URL-encoded string
+    const decodedQuery = decodeURIComponent(query);
+
+    // Split the string by commas to get an array
+    const queryArray = decodedQuery.split(',');
+
+    return queryArray;
+}
+
+ // Utility function to format duration
+  export const formatDuration = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };

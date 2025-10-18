@@ -43,7 +43,7 @@
   <dialog
     bind:this={dialogRef}
     onclick={handleBackdropClick}
-    class=" mx-auto bg-transparent mt-5"
+    class=" mx-auto bg-transparent mt-5 h-screen"
     onkeydown={(e) => e.key === "Escape" && dialogRef?.close()}
   >
     {#if visible}

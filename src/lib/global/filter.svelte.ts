@@ -1,3 +1,5 @@
+
+
 export type TopFilter = "top-tracks" | "top-artists" | "random" | "top-recent"
 let current : TopFilter  = $state("top-tracks")
 
@@ -19,9 +21,10 @@ export const getFilterStringFromType = (filterType: TopFilter) => {
       case "random":
         return "Random Song";
       case "top-recent":
-        return "Top Recent";
+        return "Listening History";
       default:
         return "Unknown";
     }
   };
+
 

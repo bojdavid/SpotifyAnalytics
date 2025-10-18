@@ -6,6 +6,7 @@
   import { getTopTracks, getRecentTracks } from "../../../api/tracks";
   import TopTracks from "$lib/components/analytics/topData/TopTracks.svelte";
   import RecentTracks from "$lib/components/analytics/topData/RecentTracks.svelte";
+  import LoaderM from "$lib/components/common/LoaderM.svelte";
 
   import {
     getCurrentTop,
@@ -14,9 +15,9 @@
 
   import { goto } from "$app/navigation";
 
-  let topTracksData: SpotifyTrack[] = $state([]);
-  let topArtistsData: TopArtistsType[] = $state([]);
-  let recentTracksData = $state([]);
+  let topTracksData = $state<{ items: any[] }>({ items: [] });
+  let topArtistsData = $state<{ items: TopArtistsType[] }>({ items: [] });
+  let recentTracksData = $state<{ items: any[] }>({ items: [] });
   let loading: boolean = $state(false);
 
   onMount(async () => {
@@ -42,19 +43,14 @@
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
+      //include ranking into the
+
+      console.log("this is the tops tracks data", topTracksData);
       loading = false;
-      console.log("recent tracks --------- ", recentTracksData);
-      //console.log("Top artists data --------", topArtistsData);
     }
   });
 
-  const filters: string[] = [
-    "Top Artists",
-    "Top Tracks",
-    "Random Song",
-    "Top Recent",
-    "Unknown",
-  ];
+  const filters: string[] = ["Top Artists", "Top Tracks", "Listening History"];
 
   let category: string = $state(getFilterStringFromType(getCurrentTop()));
 </script>
@@ -62,7 +58,9 @@
 <main class="px-2">
   <div>
     {#if loading}
-      <div>Loading</div>
+      <div class="h-screen w-full flex justify-center items-center">
+        <LoaderM />
+      </div>
     {:else}
       <!-- CATEGORY OPTION -->
       <label class="label w-[250px]">
@@ -83,7 +81,7 @@
         <div class="mt-10">
           <TopTracks topTracks_={topTracksData} />
         </div>
-      {:else if category == "Top Recent"}
+      {:else if category == "Listening History"}
         <!-- Top Tracks -->
         <div class="mt-10">
           <RecentTracks recentTracks_={recentTracksData} />

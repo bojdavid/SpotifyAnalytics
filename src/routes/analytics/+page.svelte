@@ -4,6 +4,7 @@
   import { getTopArtists } from "../../api/artists";
   import { getTopTracks, getRecentTracks } from "../../api/tracks";
   import { goto } from "$app/navigation";
+  import LoaderM from "$lib/components/common/LoaderM.svelte";
 
   import { setCurrentTop, type TopFilter } from "$lib/global/filter.svelte";
 
@@ -47,40 +48,42 @@
   };
 </script>
 
-<section>
+<section class="py-10">
   {#if loading}
-    loading....
+    <div class="h-screen w-full flex justify-center items-center">
+      <LoaderM />
+    </div>
   {:else}
     <div class=" flex gap-5 justify-center flex-wrap my-10">
       <TopCard
         title="Top 10 Tracks"
-        data={topTracksData.items.slice(0, 10)}
+        data={topTracksData.items.slice(0, 5)}
         action={viewMore}
         type="top-tracks"
-        background="spotify-green"
+        background="bg-yellow-500"
       />
       <TopCard
         title="Top 10  Artists"
-        data={topArtistsData.items.slice(0, 10)}
+        data={topArtistsData.items.slice(0, 5)}
         action={viewMore}
         type="top-artists"
-        background="spotify-green"
+        background="bg-surface-500"
       />
       <TopCard
-        title="Recently Played Tracks"
-        data={recentTracksData.items.slice(0, 10)}
+        title="Listening History"
+        data={recentTracksData.items.slice(0, 5)}
         action={viewMore}
         type="top-recent"
-        background="spotify-black/50"
+        background="bg-red-500"
       />
     </div>
+    <div class="flex flex-col gap-5 justify-center items-center">
+      <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
+        Perform An Audio Analysis
+      </button>
+      <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
+        View Playlists
+      </button>
+    </div>
   {/if}
-  <div class="flex flex-col gap-5 justify-center items-center">
-    <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
-      Perform An Audio Analysis
-    </button>
-    <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
-      View Playlists
-    </button>
-  </div>
 </section>
