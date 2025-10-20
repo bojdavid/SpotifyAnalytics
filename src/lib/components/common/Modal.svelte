@@ -1,7 +1,7 @@
 <script lang="ts">
   import { X } from "@lucide/svelte";
-  import ArtistCard from "$lib/components/analytics/ArtistCard.svelte";
-  import TrackCard from "$lib/components/analytics/TrackCard.svelte";
+  import ArtistCard from "$lib/components/analytics/card/ArtistCard.svelte";
+  import TrackCard from "$lib/components/analytics/card/TrackCard.svelte";
 
   import { scale } from "svelte/transition";
   import { tick } from "svelte";
@@ -47,7 +47,7 @@
   >
     {#if visible}
       <div
-        class="bg-white/80 dark:bg-spotify-black/50 backdrop-blur w-full rounded-lg"
+        class="bg-white/30 dark:bg-spotify-black/50 backdrop-blur w-full rounded-lg"
         transition:scale={{ duration: 300, start: 0.8 }}
         onoutroend={handleOutroEnd}
       >

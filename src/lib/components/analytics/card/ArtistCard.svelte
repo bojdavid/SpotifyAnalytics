@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { X, UserPlus, UserMinus } from "@lucide/svelte";
+  import { X, UserPlus, UserMinus, Loader } from "@lucide/svelte";
   import { formatFollowerCount } from "$lib/global/functions";
   import { onMount } from "svelte";
   import {
     getArtistTopTracks,
     checkIfUserFollowsArtistOrUser,
-  } from "../../../api/artists";
+  } from "../../../../api/artists";
   import { goto } from "$app/navigation";
   import { tick } from "svelte";
 
@@ -15,6 +15,7 @@
   let userFollowsArtist: boolean = $state(false);
   let loading: boolean = $state(true);
   let visible: boolean = $state(false);
+  let follow_unFollow_Artist_Pending: boolean = $state(false);
 
   onMount(async () => {
     try {
@@ -28,6 +29,7 @@
     } catch (err: any) {
       loading = false;
       err = JSON.parse(err.message);
+      //Redirect back to the auth page if accessToken has expired.
       if (err.status == 401) {
         goto("/auth");
         return;
@@ -35,19 +37,29 @@
 
       alert(`Error: ${err.message}`);
       console.error("The error message:", err.message);
-      //Redirect back to the auth page if accessToken has expired.
     } finally {
       await tick();
       loading = false;
       visible = true;
-      console.log(" artist track data --------", artistTopTracks);
+      //console.log(" artist track data --------", artistTopTracks);
     }
   });
 
-  console.log("This is the artistsData", artistData);
+  const follow_artist = () => {
+    follow_unFollow_Artist_Pending = true;
+    setTimeout(() => {
+      follow_unFollow_Artist_Pending = false;
+    }, 2000);
+  };
+  const unfollow_artist = () => {
+    follow_unFollow_Artist_Pending = true;
+    setTimeout(() => {
+      follow_unFollow_Artist_Pending = false;
+    }, 2000);
+  };
 </script>
 
-<article class=" min-w-[300px] max-w-[600px] w-full px-5">
+<article class=" w-[600px] max-w-full px-5 mx-auto">
   <header class="flex gap-5 justify-between pt-5">
     <div>
       <h2>{artistData.name}</h2>
@@ -55,27 +67,41 @@
         <span class="font-light text-surface-400">Followers : </span>
         {formatFollowerCount(artistData.followers.total)}
       </p>
-      {#if loading}
-        <div class="w-25 h-4 bg-spotify-green/50 animate-pulse"></div>
-      {:else if userFollowsArtist}
-        <button
-          class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
-        >
-          <span>
-            <UserMinus size={20} />
-          </span>
-          Unfollow Artist
-        </button>
-      {:else}
-        <button
-          class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
-        >
-          <span>
-            <UserPlus size={20} />
-          </span>
-          Follow Artist
-        </button>
-      {/if}
+      <div class="flex items-center gap-2">
+        {#if loading}
+          <div class="w-25 h-4 bg-spotify-green/50 animate-pulse"></div>
+        {:else if userFollowsArtist}
+          <button
+            class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
+                  disabled:cursor-not-allowed disabled:text-spotify-green/50
+            "
+            disabled={follow_unFollow_Artist_Pending}
+            onclick={unfollow_artist}
+          >
+            <span>
+              <UserMinus size={20} />
+            </span>
+            Unfollow Artist
+          </button>
+        {:else}
+          <button
+            class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
+                  disabled:cursor-not-allowed disabled:text-spotify-green/50
+            "
+            disabled={follow_unFollow_Artist_Pending}
+            onclick={follow_artist}
+          >
+            <span class="text-xs">
+              <UserPlus size={20} />
+            </span>
+            Follow Artist
+          </button>
+        {/if}
+        <!-- Load indicator for when user clicks the follow button -->
+        {#if follow_unFollow_Artist_Pending}
+          <Loader size={10} class="animate-spin inline-flex" />
+        {/if}
+      </div>
     </div>
   </header>
 
@@ -125,7 +151,7 @@
     {:else}
       {#each artistTopTracks.tracks as track}
         <button
-          class="w-full text-[10px] md:text-sm text-left flex items-center gap-2 border-spotify-green border-1 my-2 p-1 hover:bg-spotify-green/50 transition duration-500 ease-in-out rounded-lg active:scale-95 text-wrap"
+          class="w-full text-[10px] md:text-sm text-left flex items-center gap-2 border-spotify-green border-1 my-2 p-1 hover:bg-spotify-green/50 transition duration-500 ease-in-out rounded-lg active:scale-95 active:bg-spotify-green/30 text-wrap"
         >
           <div class="h-10 w-10 rounded-full">
             <img

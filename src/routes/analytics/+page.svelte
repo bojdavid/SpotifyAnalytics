@@ -3,6 +3,8 @@
   import { onMount, tick } from "svelte";
   import { getTopArtists } from "../../api/artists";
   import { getTopTracks, getRecentTracks } from "../../api/tracks";
+  import { getAvailableDevices } from "../../api/player";
+  import { getUsersPlaylists } from "../../api/playlist";
   import { goto } from "$app/navigation";
   import LoaderM from "$lib/components/common/LoaderM.svelte";
   import { fade, fly } from "svelte/transition";
@@ -14,6 +16,9 @@
   let topTracksData: any = $state([]);
   let topArtistsData: any = $state([]);
   let recentTracksData: any = $state([]);
+  let availableDevices: any = $state([]);
+  let playlists: any = $state([]);
+
   let loading: boolean = $state(true);
 
   onMount(async () => {
@@ -21,11 +26,14 @@
       loading = true;
       let accessToken: any = localStorage.getItem("access_token");
 
-      [topTracksData, topArtistsData, recentTracksData] = await Promise.all([
-        getTopTracks(accessToken),
-        getTopArtists(accessToken),
-        getRecentTracks(accessToken),
-      ]);
+      [topTracksData, topArtistsData, recentTracksData, playlists] =
+        await Promise.all([
+          getTopTracks(accessToken),
+          getTopArtists(accessToken),
+          getRecentTracks(accessToken),
+          getUsersPlaylists(accessToken),
+          //getAvailableDevices(accessToken),
+        ]);
     } catch (err: any) {
       loading = false;
       err = JSON.parse(err.message);
@@ -42,7 +50,8 @@
       await tick();
       loading = false;
       visible = true;
-      //console.log("Top artists data --------", topArtistsData);
+      //console.log("Available Devices --------", availableDevices);
+      console.log(playlists);
     }
   });
 
@@ -58,6 +67,9 @@
       <LoaderM />
     </div>
   {:else if visible}
+    <h1 class="mx-5">
+      Inspect Available Devices, playlist api call is ready, include it
+    </h1>
     <div
       class=" flex gap-5 justify-center flex-wrap my-10"
       transition:fly={{ y: 50, duration: 2000 }}
@@ -85,9 +97,6 @@
       />
     </div>
     <div class="flex flex-col gap-5 justify-center items-center">
-      <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
-        Perform An Audio Analysis
-      </button>
       <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
         View Playlists
       </button>

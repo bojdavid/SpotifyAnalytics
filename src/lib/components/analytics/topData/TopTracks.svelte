@@ -145,16 +145,7 @@
                 </div>
               </div>
             </td>
-            <td class="{tdClass} text-sm">
-              <a
-                href={track.external_urls.spotify}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-spotify-green hover:text-green-900 dark:hover:text-green-300 font-medium"
-              >
-                Open in Spotify
-              </a>
-            </td>
+
             <td class={tdClass}>
               <Modal cardType="track" actionName="..." cardData={track} />
               <!--

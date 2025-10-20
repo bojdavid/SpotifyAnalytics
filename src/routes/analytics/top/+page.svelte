@@ -63,9 +63,12 @@
       </div>
     {:else}
       <!-- CATEGORY OPTION -->
-      <label class="label w-[250px]">
+      <label class="label flex gap-5 items-center mt-5">
         <span class="label-text text-lg">Category To View</span>
-        <select class="select" bind:value={category}>
+        <select
+          class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center"
+          bind:value={category}
+        >
           {#each filters as filter}
             <option value={filter}> {filter}</option>
           {/each}

@@ -10,7 +10,7 @@
     id="filter"
     onchange={onFilterChange}
     bind:value={activeFilter.name}
-    class="text-center border-1 border-spotify-green rounded-xs"
+    class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center"
   >
     {#each filter as f}
       <option value={f.name}>{f.name}</option>

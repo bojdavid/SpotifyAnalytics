@@ -131,11 +131,7 @@
                 >{formatFollowerCount(artists.followers.total)}</td
               >
               <td class={tdClass}>{artists.genres}</td>
-              <td class={tdClass}>
-                <a href={artists.uri} class="text-spotify-green !text-right">
-                  Open in spotify</a
-                ></td
-              >
+
               <td class={tdClass}>
                 <Modal cardType="artist" actionName="..." cardData={artists} />
               </td>
