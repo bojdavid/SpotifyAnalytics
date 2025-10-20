@@ -18,6 +18,8 @@
   import { flip } from "svelte/animate";
   import { fly } from "svelte/transition";
 
+  import SortBy from "$lib/components/common/SortBy.svelte";
+
   let { topArtists_ } = $props();
 
   let topArtists: TopArtistsType[] = $state([]);
@@ -84,20 +86,13 @@
 </script>
 
 <div>
-  <label for="filter" class="mr-2">Sort by:</label>
-  <select id="filter" onchange={onFilterChange} bind:value={activeFilter.name}>
-    {#each filter as f}
-      <option value={f.name}>{f.name}</option>
-    {/each}
-  </select>
-  <button
-    class="transform {isAscending
-      ? 'rotate-180'
-      : ''} transition-all duration-300 ease-in-out"
-    onclick={() => toggleAscDesc()}
-  >
-    <ArrowDownNarrowWide size={30} />
-  </button>
+  <SortBy
+    {filter}
+    {onFilterChange}
+    {toggleAscDesc}
+    {activeFilter}
+    {isAscending}
+  />
 </div>
 <div>
   <div class="table-wrap overflow-x-auto">

@@ -1,58 +1,53 @@
 <script lang="ts">
-  import { X, UserPlus } from "@lucide/svelte";
+  import { X, UserPlus, UserMinus } from "@lucide/svelte";
   import { formatFollowerCount } from "$lib/global/functions";
-
-  const longSongTitles = [
-    {
-      title:
-        "The Late Great Planet Earth (Original Soundtrack to the Film of the Same Name)",
-      artist: "Funkadelic",
-    },
-    {
-      title: "Smash It Up (What You Gonna Do?)",
-      artist: "The Offspring",
-    },
-    {
-      title: "A Quick One, While He's Away",
-      artist: "The Who",
-    },
-    {
-      title: "The Loneliest Feeling That I Know (Is Being Next To You)",
-      artist: "The Carter Family",
-    },
-    {
-      title:
-        "Several Species of Small Furry Animals Gathered Together in a Cave and Grooving with a Pict",
-      artist: "Pink Floyd",
-    },
-    {
-      title: "If You Didn't See Me (Then You Weren't Looking)",
-      artist: "The Cure",
-    },
-    {
-      title: "The Whole World and You",
-      artist: "Andrew Bird's Bowl of Fire",
-    },
-    {
-      title: "I'm Not Sure, But I'm Certainly Not Confident",
-      artist: "The Mountain Goats",
-    },
-    {
-      title: "How Long Do I Have to Wait for Everything?",
-      artist: "The Killers",
-    },
-    {
-      title:
-        "We Don't Know When We're Gettin' Out of Here, But We Know We're Leavin' Soon",
-      artist: "Less Than Jake",
-    },
-  ];
+  import { onMount } from "svelte";
+  import {
+    getArtistTopTracks,
+    checkIfUserFollowsArtistOrUser,
+  } from "../../../api/artists";
+  import { goto } from "$app/navigation";
+  import { tick } from "svelte";
 
   let { artistData } = $props();
+
+  let artistTopTracks: any = $state([]);
+  let userFollowsArtist: boolean = $state(false);
+  let loading: boolean = $state(true);
+  let visible: boolean = $state(false);
+
+  onMount(async () => {
+    try {
+      loading = true;
+      let accessToken: any = localStorage.getItem("access_token");
+
+      [artistTopTracks, userFollowsArtist] = await Promise.all([
+        getArtistTopTracks(accessToken, artistData.id),
+        checkIfUserFollowsArtistOrUser(accessToken, artistData.id),
+      ]);
+    } catch (err: any) {
+      loading = false;
+      err = JSON.parse(err.message);
+      if (err.status == 401) {
+        goto("/auth");
+        return;
+      }
+
+      alert(`Error: ${err.message}`);
+      console.error("The error message:", err.message);
+      //Redirect back to the auth page if accessToken has expired.
+    } finally {
+      await tick();
+      loading = false;
+      visible = true;
+      console.log(" artist track data --------", artistTopTracks);
+    }
+  });
+
   console.log("This is the artistsData", artistData);
 </script>
 
-<article class=" min-w-[250px] max-w-[600px] w-full px-5">
+<article class=" min-w-[300px] max-w-[600px] w-full px-5">
   <header class="flex gap-5 justify-between pt-5">
     <div>
       <h2>{artistData.name}</h2>
@@ -60,14 +55,27 @@
         <span class="font-light text-surface-400">Followers : </span>
         {formatFollowerCount(artistData.followers.total)}
       </p>
-      <button
-        class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
-      >
-        <span>
-          <UserPlus size={20} />
-        </span>
-        Follow Artist
-      </button>
+      {#if loading}
+        <div class="w-25 h-4 bg-spotify-green/50 animate-pulse"></div>
+      {:else if userFollowsArtist}
+        <button
+          class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
+        >
+          <span>
+            <UserMinus size={20} />
+          </span>
+          Unfollow Artist
+        </button>
+      {:else}
+        <button
+          class="text-spotify-green rounded-lg text-sm font-bold flex gap-1"
+        >
+          <span>
+            <UserPlus size={20} />
+          </span>
+          Follow Artist
+        </button>
+      {/if}
     </div>
   </header>
 
@@ -99,18 +107,47 @@
 
   <!-- Top 10 tracks-->
   <div class="mt-5">
-    <h4>Top 10 tracks</h4>
+    <h4>{artistData.name} top 10 tracks</h4>
     <p class="text-xs text-surface-500">Click On A Track To View It</p>
-    {#each longSongTitles as track, idx}
-      <button
-        class="w-full text-[10px] md:text-sm text-left flex border-spotify-green border-1 my-2 p-1 hover:bg-spotify-green/50 transition duration-500 ease-in-out rounded-lg active:scale-95 text-wrap"
-      >
-        <div class="mr-2 my-auto">
-          {idx + 1}.
+
+    {#if loading}
+      <!-- Place holder for top 10 artist when loading-->
+      {#each [...Array(10).keys()] as n}
+        <div
+          class="w-full flex items-center border-spotify-green border-1 my-2 p-1 animate-pulse rounded-lg gap-2"
+        >
+          <div
+            class="rounded-full bg-surface-800 animate-pulse h-10 w-10"
+          ></div>
+          <div class="w-full bg-surface-800 animate pulse h-5"></div>
         </div>
-        {track.title}
-      </button>
-    {/each}
+      {/each}
+    {:else}
+      {#each artistTopTracks.tracks as track}
+        <button
+          class="w-full text-[10px] md:text-sm text-left flex items-center gap-2 border-spotify-green border-1 my-2 p-1 hover:bg-spotify-green/50 transition duration-500 ease-in-out rounded-lg active:scale-95 text-wrap"
+        >
+          <div class="h-10 w-10 rounded-full">
+            <img
+              src={track.album.images[2].url}
+              alt={track.name}
+              class="w-full h-full cover rounded-lg"
+            />
+          </div>
+          <div>
+            <p>
+              {track.name}
+            </p>
+            <div class="flex gap-1 items-center text-xs">
+              {#each track.artists as artist}
+                <div class="w-1 h-1 rounded-lg bg-spotify-green"></div>
+                <p>{artist.name}</p>
+              {/each}
+            </div>
+          </div>
+        </button>
+      {/each}
+    {/if}
   </div>
 
   <!-- Actions-->
