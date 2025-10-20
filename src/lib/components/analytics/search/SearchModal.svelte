@@ -3,6 +3,7 @@
   import { scale } from "svelte/transition";
   import { tick } from "svelte";
   import SearchComponent from "./SearchComponent.svelte";
+  import TypingAnimation from "$lib/components/common/TypingAnimation.svelte";
 
   let dialogRef: HTMLDialogElement;
   let visible = $state(false); // controls transition of inner panel
@@ -35,9 +36,13 @@
 <section>
   <button
     onclick={openDialog}
-    class="flex min-w-sm max-w-md w-full border-1 border-surface-200 rounded-lg px-3 py-1"
+    class="flex gap-5 items-center min-w-sm max-w-md w-full border-1 border-surface-200 rounded-lg px-3 py-1"
   >
-    <Search size={20} /> Search
+    <Search size={20} />
+    <TypingAnimation
+      items={["track", "albums", "playlist", "episode", "artist", "shows"]}
+      prefix="Search By"
+    />
   </button>
 
   <dialog

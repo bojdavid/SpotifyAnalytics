@@ -25,11 +25,12 @@ interface userDataImageType {
   export   interface TopArtistsType {
     name: string;
     rank?: number;
-    image: {
+    openDialog?:boolean;
+    images: {
       url: string;
       height: number;
       width: number;
-    };
+    }[];
     followers: {href:string, total:number};
     genres: string[];
     href: string; // A link to the Web API endpoint providing full details of the artist.

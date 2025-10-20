@@ -1,12 +1,15 @@
 <script lang="ts">
   import TopCard from "$lib/components/analytics/home/TopCard.svelte";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { getTopArtists } from "../../api/artists";
   import { getTopTracks, getRecentTracks } from "../../api/tracks";
   import { goto } from "$app/navigation";
   import LoaderM from "$lib/components/common/LoaderM.svelte";
+  import { fade, fly } from "svelte/transition";
 
   import { setCurrentTop, type TopFilter } from "$lib/global/filter.svelte";
+
+  let visible = $state(false);
 
   let topTracksData: any = $state([]);
   let topArtistsData: any = $state([]);
@@ -36,8 +39,9 @@
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
+      await tick();
       loading = false;
-
+      visible = true;
       //console.log("Top artists data --------", topArtistsData);
     }
   });
@@ -53,8 +57,11 @@
     <div class="h-screen w-full flex justify-center items-center">
       <LoaderM />
     </div>
-  {:else}
-    <div class=" flex gap-5 justify-center flex-wrap my-10">
+  {:else if visible}
+    <div
+      class=" flex gap-5 justify-center flex-wrap my-10"
+      transition:fly={{ y: 50, duration: 2000 }}
+    >
       <TopCard
         title="Top 10 Tracks"
         data={topTracksData.items.slice(0, 5)}

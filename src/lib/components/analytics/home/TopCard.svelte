@@ -1,22 +1,36 @@
 <script lang="ts">
   let { title, data, action, type, background = "bg-surface-500" } = $props();
+  import { timeElapsedSince } from "$lib/global/functions";
 
-  console.log(type, "-----", data);
+  import { fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
 </script>
 
-<article class=" min-w-40 w-full max-w-[400px] {background} px-3 mx-5">
+<article
+  class=" min-w-40 w-full max-w-[400px] {background} px-3 mx-5 rounded-lg"
+>
   <h3 class="text-center font-bold mt-5">{title}</h3>
   <div class="">
-    {#each data as d, idx}
-      <div class="mb-3">
-        <div class=" text-xs md:text-md font-semibold flex gap-6">
+    {#each data as d, idx (d)}
+      <div
+        class="mb-3"
+        in:fly={{
+          x: -24,
+          y: 0,
+          opacity: 0,
+          duration: 220,
+          delay: idx * 100,
+        }}
+        animate:flip
+      >
+        <div class=" text-xs md:text-md font-semibold flex gap-2">
           <div class=" text-lg py-auto">#{idx + 1}</div>
           <figure class="flex gap-5 shadow-sm w-full">
             {#if type == "top-tracks"}
               <img
                 src={d.album.images[2].url}
                 alt={d.name}
-                class="rounded-full w-13 h-13 cover"
+                class="rounded-lg w-13 h-13 cover"
               />
               <figcaption class="text-lg my-auto">
                 {d.name}
@@ -36,7 +50,7 @@
               <img
                 src={d.images[2].url}
                 alt={d.name}
-                class="rounded-full w-13 h-13 cover"
+                class="rounded-lg w-13 h-13 cover"
               />
               <figcaption class="text-lg my-auto">
                 {d.name}
@@ -46,14 +60,19 @@
               <img
                 src={d.track.album.images[2].url}
                 alt={d.track.name}
-                class="rounded-full w-13 h-13 cover"
+                class="rounded-full w-13 h-13 cover rounded-lg"
               />
               <figcaption class="text-lg my-auto">
                 {d.track.name}
                 <div
                   class="text-xs font-medium text-spotify-black/50 flex gap-6"
                 >
-                  <p>{d.track.id}</p>
+                  <p class="text-[10px] font-bold">
+                    <span class="text-gray-800/50 font-light"
+                      >Last played:
+                    </span>
+                    {timeElapsedSince(d.played_at)} ago
+                  </p>
                 </div>
               </figcaption>
             {/if}
@@ -64,7 +83,7 @@
   </div>
   <div>
     <button onclick={() => action(type)} class="float-right text-lg">
-      View more >>
+      View more &gt;&gt;
     </button>
   </div>
 </article>

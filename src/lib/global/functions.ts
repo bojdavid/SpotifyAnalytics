@@ -253,3 +253,35 @@ export const convertQueriesToEncodedString = (
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
+
+export const  timeElapsedSince = (timestamp: string): string => {
+  // Parse the timestamp to a Date object
+  const givenDate = new Date(timestamp);
+  const currentDate = new Date();
+
+  // Calculate the difference in milliseconds
+  const diffInMs = currentDate.getTime() - givenDate.getTime();
+
+  // Convert milliseconds to days, hours, and minutes
+  const msPerMinute = 60 * 1000;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+
+  let days = Math.floor(diffInMs / msPerDay);
+  let hours = Math.floor((diffInMs % msPerDay) / msPerHour);
+  let minutes = Math.floor((diffInMs % msPerHour) / msPerMinute);
+
+  // Format the output
+  let result: string[] = [];
+  if (days > 0) {
+    result.push(`${days} day${days > 1 ? 's' : ''}`);
+  }
+  if (hours > 0) {
+    result.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+  }
+  if (minutes > 0 || result.length === 0) {
+    result.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+  }
+
+  return result.join(' ');
+}

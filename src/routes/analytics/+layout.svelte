@@ -18,12 +18,14 @@
 
   let isOffline: boolean = $state(false);
   let userProfile: any = $state([]);
+  let loading: boolean = $state(true);
 
   onMount(async () => {
     isOffline = updateNetworkStatus();
     console.log("offline status --------", isOffline);
     let accessToken: any = localStorage.getItem("access_token");
     if (!isOffline) {
+      loading = true;
       try {
         let res = await getProfile(accessToken);
         userProfile = res;
@@ -37,6 +39,7 @@
         console.error("The error message", strError);
       } finally {
         setUserData(userProfile);
+        loading = false;
         //console.log("user data after set data------ ", userData);
       }
     }
@@ -57,6 +60,7 @@
         closeSideBar={toggleSideBar}
         username={userData.display_name}
         imageUrl={userData.images[1]}
+        {loading}
       />
     </aside>
   </div>
@@ -69,6 +73,7 @@
         closeSideBar={toggleSideBar}
         username={userData.display_name}
         imageUrl={userData.images[1]}
+        {loading}
       />
     </aside>
   </div>
@@ -90,6 +95,7 @@
         email={userData.email}
         imageUrl={userData.images[1]}
         {toggleSideBar}
+        {loading}
       />
       {#if !isOffline}
         {@render children?.()}

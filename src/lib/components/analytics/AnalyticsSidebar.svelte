@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { closeSideBar, username, imageUrl } = $props();
+  let { closeSideBar, username, imageUrl, loading } = $props();
   import { X } from "@lucide/svelte";
   import { page } from "$app/state";
   import LightSwitch from "../LightSwitch.svelte";
@@ -25,14 +25,21 @@
     </button>
     <div class="text-2xl py-10 h-full flex flex-col justify-between">
       <header class="flex">
-        <h2 class="text-3xl">
-          {username}
-        </h2>
-        <img
-          src={imageUrl.url}
-          alt="profile piture of {username}"
-          class="rounded-full"
-        />
+        {#if loading}
+          <div class="w-lg h-full flex gap-6 items-center">
+            <div class="w-1/2 h-1/2 animate-pulse bg-gray-500"></div>
+            <div class="w-15 h-15 rounded-full bg-gray-500 animate-pulse"></div>
+          </div>
+        {:else}
+          <h2 class="text-3xl">
+            {username}
+          </h2>
+          <img
+            src={imageUrl.url}
+            alt="profile piture of {username}"
+            class="rounded-full"
+          />
+        {/if}
         <LightSwitch />
       </header>
       <main class="flex flex-col gap-5 pt-20 flex-grow">

@@ -15,6 +15,8 @@
 
   import Modal from "$lib/components/common/Modal.svelte";
   import sortArray from "sort-array";
+  import { flip } from "svelte/animate";
+  import { fly } from "svelte/transition";
 
   let { topArtists_ } = $props();
 
@@ -72,6 +74,13 @@
       order: isAscending ? "asc" : "desc",
     });
   }
+
+  //open dialog
+  let openDialog = $state(false);
+  const triggerDialog = (name: string) => {
+    openDialog = true;
+    console.log("artists name - ", name);
+  };
 </script>
 
 <div>
@@ -96,26 +105,48 @@
       <caption class="pt-4">Top Aritsts</caption>
       <TableHeadSnippet {fields} />
       <tbody class="[&>tr]:hover:bg-surface-500/80">
-        {#each slicedSource(topArtists) as artists}
-          <tr>
-            <td class={tdClass}>{artists.rank}</td>
-            <td class={tdClass}>
-              {artists.name}
-            </td>
-            <td class={tdClass}
-              >{formatFollowerCount(artists.followers.total)}</td
+        {#key activeFilter.name}
+          {#each slicedSource(topArtists) as artists, idx (artists)}
+            <tr
+              in:fly={{
+                x: -24,
+                y: 0,
+                opacity: 0,
+                duration: 220,
+                delay: idx * 100,
+              }}
+              animate:flip
+              onclick={() => triggerDialog(artists.name)}
             >
-            <td class={tdClass}>{artists.genres}</td>
-            <td class={tdClass}>
-              <a href={artists.uri} class="text-spotify-green !text-right">
-                Open in spotify</a
-              ></td
-            >
-            <td class={tdClass}>
-              <Modal cardType="artist" actionName="..." cardData={artists} />
-            </td>
-          </tr>
-        {/each}
+              <td class={tdClass}>{artists.rank}</td>
+              <td class="{tdClass} flex gap-2">
+                <div class="w-10 h-10">
+                  <img
+                    src={artists.images[2].url}
+                    alt={artists.name}
+                    loading="lazy"
+                    class="cover rounded-lg w-full h-full"
+                  />
+                </div>
+                <div class="text-sm font-medium my-auto">
+                  {artists.name}
+                </div>
+              </td>
+              <td class={tdClass}
+                >{formatFollowerCount(artists.followers.total)}</td
+              >
+              <td class={tdClass}>{artists.genres}</td>
+              <td class={tdClass}>
+                <a href={artists.uri} class="text-spotify-green !text-right">
+                  Open in spotify</a
+                ></td
+              >
+              <td class={tdClass}>
+                <Modal cardType="artist" actionName="..." cardData={artists} />
+              </td>
+            </tr>
+          {/each}
+        {/key}
       </tbody>
       <tfoot>
         <tr>

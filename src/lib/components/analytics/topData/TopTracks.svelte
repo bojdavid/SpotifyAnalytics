@@ -14,6 +14,9 @@
   import { formatDuration } from "$lib/global/functions";
   import sortArray from "sort-array";
 
+  import { fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
+
   let { topTracks_ } = $props();
 
   let topTracks = $state([]);
@@ -91,66 +94,85 @@
   <table class="w-full divide-y divide-gray-200">
     <TableHeadSnippet {fields} />
     <tbody class=" divide-y divide-gray-200">
-      {#each slicedSource(topTracks) as track}
-        <tr
-          class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
-        >
-          <td class={tdClass}>
-            <p class="text-lg">
-              {track.rank}
-            </p>
-          </td>
-          <td class={tdClass}>
-            <div class="text-sm font-medium">{track.name}</div>
-            <div class="text-xs text-gray-500">ID: {track.id}</div>
-          </td>
-          <td class={tdClass}>
-            <div class="text-sm">
-              {#each track.artists as artist, idx}
-                <span>
-                  {artist.name}
-                  {idx < track.artists.length - 1 && ", "}
-                </span>
-              {/each}
-            </div>
-          </td>
-          <td class="{tdClass} text-sm">
-            {formatDuration(track.duration_ms)}
-          </td>
-          <td class={tdClass}>
-            <div class="flex items-center">
-              <div class="text-sm font-medium">
-                {track.popularity}
+      {#key activeFilter.name}
+        {#each slicedSource(topTracks) as track, idx (track)}
+          <tr
+            class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
+            in:fly={{
+              x: -24,
+              y: 0,
+              opacity: 0,
+              duration: 220,
+              delay: idx * 100,
+            }}
+            animate:flip
+          >
+            <td class={tdClass}>
+              <p class="text-lg">
+                {track.rank}
+              </p>
+            </td>
+            <td class="{tdClass} flex gap-2">
+              <div class="w-10 h-10">
+                <img
+                  src={track.album.images[2].url}
+                  alt={track.name}
+                  loading="lazy"
+                  class="cover rounded-lg w-full h-full"
+                />
               </div>
-              <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                <div
-                  class="bg-green-500 h-2 rounded-full"
-                  style={`width: ${track.popularity}%`}
-                ></div>
+              <div class="text-sm font-medium my-auto">
+                {track.name}
               </div>
-            </div>
-          </td>
-          <td class="{tdClass} text-sm">
-            <a
-              href={track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-spotify-green hover:text-green-900 dark:hover:text-green-300 font-medium"
-            >
-              Open in Spotify
-            </a>
-          </td>
-          <td class={tdClass}>
-            <Modal cardType="track" actionName="..." cardData={track} />
-            <!--
+            </td>
+            <td class={tdClass}>
+              <div class="text-sm">
+                {#each track.artists as artist, idx}
+                  <span>
+                    {artist.name}
+                    {idx < track.artists.length - 1 && ", "}
+                  </span>
+                {/each}
+              </div>
+            </td>
+            <td class="{tdClass} text-sm">
+              {formatDuration(track.duration_ms)}
+            </td>
+            <td class={tdClass}>
+              <div class="flex items-center">
+                <div class="text-sm font-medium">
+                  {track.popularity}
+                </div>
+                <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
+                  <div
+                    class="bg-green-500 h-2 rounded-full"
+                    style={`width: ${track.popularity}%`}
+                  ></div>
+                </div>
+              </div>
+            </td>
+            <td class="{tdClass} text-sm">
+              <a
+                href={track.external_urls.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-spotify-green hover:text-green-900 dark:hover:text-green-300 font-medium"
+              >
+                Open in Spotify
+              </a>
+            </td>
+            <td class={tdClass}>
+              <Modal cardType="track" actionName="..." cardData={track} />
+              <!--
           
               <button>
                 <Ellipsis />
               </button>
             -->
-          </td>
-        </tr>
-      {/each}
+            </td>
+          </tr>
+        {/each}
+      {/key}
     </tbody>
   </table>
 </div>

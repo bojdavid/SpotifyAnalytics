@@ -10,8 +10,11 @@
   import IconFirst from "@lucide/svelte/icons/chevrons-left";
   import IconLast from "@lucide/svelte/icons/chevron-right";
   import { ArrowDownNarrowWide } from "@lucide/svelte";
-  import { formatDuration } from "$lib/global/functions";
+  import { formatDuration, timeElapsedSince } from "$lib/global/functions";
   import sortArray from "sort-array";
+
+  import { fly } from "svelte/transition";
+  import { flip } from "svelte/animate";
 
   let { recentTracks_ } = $props();
   //console.log("Top tracks, ", topTracks);
@@ -20,7 +23,7 @@
     "Rank",
     "Track",
     "Artist(s)",
-    "Duration",
+    "Last Played",
     "Popularity",
     "Actions",
   ];
@@ -93,75 +96,89 @@
   <table class="w-full divide-y divide-gray-200">
     <TableHeadSnippet {fields} />
     <tbody class=" divide-y divide-gray-200">
-      {#each slicedSource(recentTracks) as recentT}
-        <tr
-          class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
-        >
-          <td class={tdClass}>
-            <p class="text-lg text-center">{recentT.rank}</p>
-          </td>
-          <td class="{tdClass} flex gap-2">
-            <div class="">
-              <img
-                src={recentT.track.album.images[2].url}
-                alt={recentT.track.name}
-                loading="lazy"
-                class="cover rounded-full w-10 h-10"
-              />
-            </div>
-            <div class="text-sm font-medium my-auto">
-              {recentT.track.name}
-            </div>
-          </td>
-          <td class={tdClass}>
-            <div class="text-sm flex">
-              {#each recentT.track.artists as artist, idx}
-                <span class="flex">
-                  {artist.name}
+      {#key activeFilter.name}
+        {#each slicedSource(recentTracks) as recentT, idx (recentT)}
+          <tr
+            class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
+            in:fly={{
+              x: -24,
+              y: 0,
+              opacity: 0,
+              duration: 220,
+              delay: idx * 100,
+            }}
+            animate:flip
+          >
+            <td class={tdClass}>
+              <p class="text-lg text-center">{recentT.rank}</p>
+            </td>
+            <td class="{tdClass} flex gap-2">
+              <div class="w-10 h-10">
+                <img
+                  src={recentT.track.album.images[2].url}
+                  alt={recentT.track.name}
+                  loading="lazy"
+                  class="cover rounded-lg w-full h-full"
+                />
+              </div>
+              <div class="text-sm font-medium my-auto">
+                {recentT.track.name}
+              </div>
+            </td>
+            <td class={tdClass}>
+              <div class="text-sm flex">
+                {#each recentT.track.artists as artist}
+                  <span class="flex">
+                    <div
+                      class="w-2 h-2 bg-spotify-green rounded-full my-auto mx-1"
+                    ></div>
+                    {artist.name}
+                  </span>
+                {/each}
+              </div>
+            </td>
+            <td class="{tdClass} text-sm">
+              {timeElapsedSince(recentT.played_at)} ago
+            </td>
+            <td class={tdClass}>
+              <div class="flex items-center">
+                <div class="text-sm font-medium">
+                  {recentT.track.popularity}
+                </div>
+                <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
                   <div
-                    class="w-2 h-2 bg-spotify-green rounded-full my-auto mx-1"
+                    class="bg-green-500 h-2 rounded-full"
+                    style={`width: ${recentT.track.popularity}%`}
                   ></div>
-                </span>
-              {/each}
-            </div>
-          </td>
-          <td class="{tdClass} text-sm">
-            {formatDuration(recentT.track.duration_ms)}
-          </td>
-          <td class={tdClass}>
-            <div class="flex items-center">
-              <div class="text-sm font-medium">
-                {recentT.track.popularity}
+                </div>
               </div>
-              <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                <div
-                  class="bg-green-500 h-2 rounded-full"
-                  style={`width: ${recentT.track.popularity}%`}
-                ></div>
-              </div>
-            </div>
-          </td>
-          <td class="{tdClass} text-sm">
-            <a
-              href={recentT.track.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-spotify-green hover:text-green-900 dark:hover:text-green-300 font-medium"
-            >
-              Open in Spotify
-            </a>
-          </td>
-          <td class={tdClass}>
-            <Modal cardType="track" actionName="..." cardData={recentT.track} />
-            <!--
+            </td>
+            <td class="{tdClass} text-sm">
+              <a
+                href={recentT.track.external_urls.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-spotify-green hover:text-green-900 dark:hover:text-green-300 font-medium"
+              >
+                Open in Spotify
+              </a>
+            </td>
+            <td class={tdClass}>
+              <Modal
+                cardType="track"
+                actionName="..."
+                cardData={recentT.track}
+              />
+              <!--
           
               <button>
                 <Ellipsis />
               </button>
             -->
-          </td>
-        </tr>
-      {/each}
+            </td>
+          </tr>
+        {/each}
+      {/key}
     </tbody>
   </table>
 </div>
