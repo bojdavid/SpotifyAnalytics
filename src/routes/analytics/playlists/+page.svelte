@@ -88,15 +88,13 @@
     {#if playlistTrackLoading}
       <div class="w-full mb-5">
         <div class="space-y-4">
-          <div class="placeholder animate-pulse"></div>
-          <div class="grid grid-cols-4 gap-4">
-            <div class="placeholder animate-pulse"></div>
-            <div class="placeholder animate-pulse"></div>
-            <div class="placeholder animate-pulse"></div>
-            <div class="placeholder animate-pulse"></div>
-          </div>
-          <div class="placeholder animate-pulse"></div>
-          <div class="placeholder animate-pulse"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
+          <div class="placeholder animate-pulse h-10"></div>
         </div>
       </div>
     {:else}
