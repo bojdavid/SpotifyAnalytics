@@ -29,13 +29,13 @@
     //topTracks = topTracks_.items;
   });
 
-  const fields: string[] = [
-    "Rank",
-    "Track",
-    "Artist(s)",
-    "Duration",
-    "Popularity",
-    "Actions",
+  const fields = [
+    { field: "Rank", hideOnMobile: false },
+    { field: "Track", hideOnMobile: false },
+    { field: "Artists(s)", hideOnMobile: true },
+    { field: "Duration", hideOnMobile: true },
+    { field: "Popularity", hideOnMobile: true },
+    { filed: "Actions", hideOnMobile: false },
   ];
 
   // State

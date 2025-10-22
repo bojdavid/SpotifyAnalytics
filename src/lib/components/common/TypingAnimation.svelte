@@ -74,8 +74,8 @@
 </script>
 
 <span class="flex items-center gap-2">
-  <span class="opacity-70">{prefix}</span>
-  <span class="relative">
+  <span class="opacity-70 text-[10px] text-nowrap md:text-lg">{prefix}</span>
+  <span class="relative text-[10px] md:text-lg">
     {current}
     <!-- caret -->
     <span

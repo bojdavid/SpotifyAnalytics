@@ -36,7 +36,7 @@
 <section>
   <button
     onclick={openDialog}
-    class="flex gap-5 items-center min-w-sm max-w-md w-full border-1 border-surface-200 rounded-lg px-3 py-1"
+    class="flex gap-5 items-center max-w-full w-[150px] md:w-[300px] border-1 border-surface-200 rounded-lg px-3 py-1"
   >
     <Search size={20} />
     <TypingAnimation

@@ -39,13 +39,13 @@
     s.slice((page - 1) * size, page * size)
   );
 
-  const fields: string[] = [
-    "Rank",
-    "Artists",
-    "Followers",
-    "Genres",
-    "Actions",
-    "",
+  const fields = [
+    { field: "Rank", hideOnMobile: false },
+    { field: "Artists", hideOnMobile: false },
+    { field: "Followers", hideOnMobile: false },
+    { field: "Genres", hideOnMobile: true },
+    { field: "Actions", hideOnMobile: false },
+    { filed: "", hideOnMobile: false },
   ];
 
   //Filters
@@ -130,7 +130,7 @@
               <td class={tdClass}
                 >{formatFollowerCount(artists.followers.total)}</td
               >
-              <td class={tdClass}>{artists.genres}</td>
+              <td class="{tdClass} hidden md:block">{artists.genres}</td>
 
               <td class={tdClass}>
                 <Modal cardType="artist" actionName="..." cardData={artists} />

@@ -1,8 +1,9 @@
 <script lang="ts">
   import TableHeadSnippet from "./TableHeadSnippet.svelte";
-  import { tdClass } from "$lib/utils/table";
+  import { tdClass, hideOnMobile } from "$lib/utils/table";
   import { Pagination } from "@skeletonlabs/skeleton-svelte";
   import Modal from "$lib/components/common/Modal.svelte";
+
   // Icons
   import IconArrowLeft from "@lucide/svelte/icons/arrow-left";
   import IconArrowRight from "@lucide/svelte/icons/arrow-right";
@@ -20,13 +21,13 @@
   let { recentTracks_ } = $props();
   //console.log("Top tracks, ", topTracks);
 
-  const fields: string[] = [
-    "Rank",
-    "Track",
-    "Artist(s)",
-    "Last Played",
-    "Popularity",
-    "Actions",
+  const fields = [
+    { field: "Rank", hideOnMobile: false },
+    { field: "Track", hideOnMobile: false },
+    { field: "Artists(s)", hideOnMobile: true },
+    { field: "Last Played", hideOnMobile: true },
+    { field: "Popularity", hideOnMobile: true },
+    { filed: "Actions", hideOnMobile: false },
   ];
 
   let recentTracks = $state([]);
@@ -119,7 +120,7 @@
                 {recentT.track.name}
               </div>
             </td>
-            <td class={tdClass}>
+            <td class="{tdClass} {hideOnMobile}">
               <div class="text-sm flex">
                 {#each recentT.track.artists as artist}
                   <span class="flex">
@@ -134,7 +135,7 @@
             <td class="{tdClass} text-sm">
               {timeElapsedSince(recentT.played_at)} ago
             </td>
-            <td class={tdClass}>
+            <td class="{tdClass} {hideOnMobile}">
               <div class="flex items-center">
                 <div class="text-sm font-medium">
                   {recentT.track.popularity}
