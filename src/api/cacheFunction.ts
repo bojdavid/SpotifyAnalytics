@@ -1,4 +1,4 @@
-const cacheDuration = 300 * 60 * 1000; // 10 minutes in milliseconds
+const cacheDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Function to cache data with a timestamp
 export const  cacheData = (key: string, data: any) => {

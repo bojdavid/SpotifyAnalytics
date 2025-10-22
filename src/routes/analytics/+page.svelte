@@ -10,6 +10,7 @@
   import { fade, fly } from "svelte/transition";
 
   import { setCurrentTop, type TopFilter } from "$lib/global/filter.svelte";
+  import PlaylistCard from "$lib/components/analytics/home/PlaylistCard.svelte";
 
   let visible = $state(false);
 
@@ -67,9 +68,7 @@
       <LoaderM />
     </div>
   {:else if visible}
-    <h1 class="mx-5">
-      Inspect Available Devices, playlist api call is ready, include it
-    </h1>
+    <h1 class="mx-5">Inspect Available Devices</h1>
     <div
       class=" flex gap-5 justify-center flex-wrap my-10"
       transition:fly={{ y: 50, duration: 2000 }}
@@ -96,10 +95,43 @@
         background="bg-red-500"
       />
     </div>
-    <div class="flex flex-col gap-5 justify-center items-center">
-      <button class="text-2xl bg-spotify-green px-10 py-2 rounded-xl">
-        View Playlists
-      </button>
+    <div
+      class="text-center border-1 border-spotify-green w-fit mx-auto px-10 rounded-sm mb-5"
+    >
+      <h3 class="">Playlists</h3>
+      <p class="text-sm font-semibold">
+        <span class="font-medium text-gray-800 dark:text-gray-200"
+          >Total Playlists :</span
+        >
+        {playlists.total}
+      </p>
+    </div>
+    <div class="relative w-full overflow-x-scroll">
+      <!-- Scrolling track -->
+      <div class="inline-flex gap-4 animate-marquee">
+        {#each playlists.items as playlist (playlist.id + "-dup")}
+          <div class="shrink-0">
+            <!-- fixed width so items don’t collapse -->
+            <PlaylistCard playlistData={playlist} />
+          </div>
+        {/each}
+      </div>
     </div>
   {/if}
 </section>
+
+<style>
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    } /* move by half because we duplicated the list */
+  }
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    white-space: nowrap; /* no line wrap */
+    will-change: transform;
+  }
+</style>

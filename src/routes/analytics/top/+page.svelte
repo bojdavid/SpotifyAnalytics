@@ -15,9 +15,18 @@
 
   import { goto } from "$app/navigation";
 
-  let topTracksData = $state<{ items: any[] }>({ items: [] });
-  let topArtistsData = $state<{ items: TopArtistsType[] }>({ items: [] });
-  let recentTracksData = $state<{ items: any[] }>({ items: [] });
+  let topTracksData = $state<{ items: any[]; total: number }>({
+    items: [],
+    total: 0,
+  });
+  let topArtistsData = $state<{ items: TopArtistsType[]; total: number }>({
+    items: [],
+    total: 0,
+  });
+  let recentTracksData = $state<{ items: any[]; limit: number }>({
+    items: [],
+    limit: 0,
+  });
   let loading: boolean = $state(false);
 
   onMount(async () => {
@@ -62,18 +71,38 @@
         <LoaderM />
       </div>
     {:else}
-      <!-- CATEGORY OPTION -->
-      <label class="label flex gap-5 items-center mt-5">
-        <span class="label-text text-lg">Category To View</span>
-        <select
-          class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center"
-          bind:value={category}
-        >
-          {#each filters as filter}
-            <option value={filter}> {filter}</option>
-          {/each}
-        </select>
-      </label>
+      <div class="flex justify-evenly px-5 items-center">
+        <!-- CATEGORY OPTION -->
+        <label class="label flex gap-5 items-center mt-5">
+          <span class="label-text text-lg">Category To View</span>
+          <select
+            class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center py-2"
+            bind:value={category}
+          >
+            {#each filters as filter}
+              <option value={filter}> {filter}</option>
+            {/each}
+          </select>
+        </label>
+        {#if category != "Listening History"}
+          <div
+            class="whitespace-nowrap text-lg bg-spotify-green px-5 py-2 font-bold rounded-sm shadow-lg shadow-spotify-green"
+          >
+            <span class="font-light">
+              {category == "Top Tracks"
+                ? "Tracks"
+                : category == "Top Artists"
+                  ? "Artists"
+                  : ""} :
+            </span>
+            {category == "Top Artists"
+              ? topArtistsData.total
+              : category == "Top Tracks"
+                ? topTracksData.total
+                : ""}
+          </div>
+        {/if}
+      </div>
       {#if category == "Top Artists"}
         <!-- TOP ARTISTS-->
         <div class="mt-10 w-full">

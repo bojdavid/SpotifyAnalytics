@@ -37,3 +37,43 @@ export const getUsersPlaylists = async (accessToken:string) =>{
       alert("Access token is undefined");
     }
 }
+
+export const getPlaylistTracks = async (accessToken:string, playlistId:string) =>{
+  const url = "https://api.spotify.com/v1/playlists/57MLkwQpPcKa4OV8ztaaHk/tracks"
+
+  const cacheKey = `playlistTracks-${playlistId}`;
+      // Try to get cached data
+      const cachedData = getCachedData<any>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
+
+       
+    //Check if access token is valid
+    if (accessToken != "undefined" && accessToken) {
+     try {
+          const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            headers: {
+              Authorization: "Bearer " + accessToken,
+            },
+          });
+
+          if (!response.ok) {
+             const errorData = await response.json(); // Parse the error response
+              const errorText = errorData.error ? errorData.error.message : JSON.stringify(errorData);
+               
+            throw new Error(JSON.stringify(errorData.error))
+          }
+
+          const data = await response.json();
+          // Cache the data
+          cacheData(cacheKey, data);
+          return data;
+    } catch (error) {
+          console.error(`Error fetching tracks of playlist with id ${playlistId}:`, error);
+          throw error;
+    }
+    } else {
+      alert("Access token is undefined");
+    }
+}

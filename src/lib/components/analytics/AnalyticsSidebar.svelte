@@ -12,8 +12,9 @@
     { name: "Home", route: "/analytics" },
     { name: "Top Data", route: "/analytics/top" },
     { name: "Playlists", route: "/analytics/playlists" },
-    { name: "Audio Analysis", route: "/analytics/audio-analysis" },
   ];
+
+  const clearSessionCacheOnLogout = () => {};
 </script>
 
 <div class="flex w-full gap-0">
@@ -56,7 +57,13 @@
       </main>
       <footer class="mt-auto mb-6 flex flex-col">
         <a href="/analytics/settings" class="">Settings</a>
-        <a href="./" class="text-red-500">Logout</a>
+        <a
+          href="./"
+          class="text-red-500"
+          onclick={() => {
+            sessionStorage.clear();
+          }}>Logout</a
+        >
       </footer>
     </div>
   </section>
