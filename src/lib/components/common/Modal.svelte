@@ -6,7 +6,20 @@
   import { scale } from "svelte/transition";
   import { tick } from "svelte";
 
-  let { cardType, actionName, cardData } = $props();
+  interface Props {
+    cardType: "artist" | "track" | "playlist";
+    actionName?: string; //name to display as dialog opener
+    cardData: any;
+    openModal?: boolean;
+    closeModalFromParent: () => void; //changes open modal to false
+  }
+  let {
+    cardType,
+    actionName,
+    cardData,
+    openModal,
+    closeModalFromParent,
+  }: Props = $props();
 
   let dialogRef: HTMLDialogElement;
   let visible = $state(false); // controls transition of inner panel
@@ -18,9 +31,16 @@
     dialogRef?.showModal();
   };
 
+  $effect(() => {
+    if (openModal) {
+      openDialog();
+    }
+  });
+
   const closeDialog = () => {
     // trigger outro of inner panel; dialog closes on outroend
     visible = false;
+    closeModalFromParent();
   };
 
   const handleBackdropClick = (event: MouseEvent) => {
@@ -37,7 +57,9 @@
 </script>
 
 <section>
-  <button onclick={openDialog}> {actionName} </button>
+  {#if actionName}
+    <button onclick={openDialog}> {actionName} </button>
+  {/if}
 
   <dialog
     bind:this={dialogRef}

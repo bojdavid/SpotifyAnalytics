@@ -16,13 +16,7 @@
   let { playlistTracks } = $props();
 
   console.log("this is the playlist tracks", playlistTracks);
-  const fields: string[] = [
-    "Track",
-    "Artist(s)",
-    "Duration",
-    "Popularity",
-    "Actions",
-  ];
+  const fields: string[] = ["Track", "Artist(s)", "Duration", "Popularity"];
 
   // State
   let page = $state(1);
@@ -30,6 +24,17 @@
   const slicedSource = $derived((s: any) =>
     s.slice((page - 1) * size, page * size)
   );
+
+  //handle dialog
+  let activeTrackIndex: number = $state(0);
+  let openModal: boolean = $state(false);
+  const setActiveIndex = (i: number) => {
+    activeTrackIndex = i;
+    openModal = true;
+  };
+  const closeModalFromParent = () => {
+    openModal = false;
+  };
 </script>
 
 <section class=" rounded-lg shadow-lg w-full overflow-x-auto">
@@ -58,6 +63,7 @@
               delay: idx * 100,
             }}
             animate:flip
+            onclick={() => setActiveIndex(idx)}
           >
             <td class="{tdClass} flex gap-2">
               <div class="w-10 h-10">
@@ -73,11 +79,11 @@
               </div>
             </td>
             <td class={tdClass}>
-              <div class="text-sm flex items-center gap-1">
-                {#each track.track.artists as artist}
-                  <div class="w-2 h-2 rounded-full bg-spotify-green"></div>
+              <div class="text-sm">
+                {#each track.track.artists as artist, idx}
                   <span>
                     {artist.name}
+                    {idx < track.track.artists.length - 1 && ", "}
                   </span>
                 {/each}
               </div>
@@ -88,7 +94,7 @@
             <td class={tdClass}>
               <div class="flex items-center">
                 <div class="text-sm font-medium">
-                  {track.track.popularity}
+                  {track.popularity}
                 </div>
                 <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
                   <div
@@ -98,21 +104,17 @@
                 </div>
               </div>
             </td>
-
-            <td class={tdClass}>
-              <Modal cardType="track" actionName="..." cardData={track.track} />
-              <!--
-            
-                <button>
-                  <Ellipsis />
-                </button>
-              -->
-            </td>
           </tr>
         {/each}
       {/key}
     </tbody>
   </table>
+  <Modal
+    cardType="track"
+    cardData={playlistTracks.items[activeTrackIndex].track}
+    {openModal}
+    {closeModalFromParent}
+  />
 </section>
 
 <footer class="flex justify-center">

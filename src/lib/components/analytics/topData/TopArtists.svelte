@@ -77,11 +77,16 @@
     });
   }
 
-  //open dialog
-  let openDialog = $state(false);
-  const triggerDialog = (name: string) => {
-    openDialog = true;
-    console.log("artists name - ", name);
+  //handle dialog
+  let activeArtistIndex: number = $state(0);
+  let openModal: boolean = $state(false);
+  const setActiveIndex = (i: number) => {
+    activeArtistIndex = i;
+    openModal = true;
+    console.log(topArtists[activeArtistIndex]);
+  };
+  const closeModalFromParent = () => {
+    openModal = false;
   };
 </script>
 
@@ -111,7 +116,7 @@
                 delay: idx * 100,
               }}
               animate:flip
-              onclick={() => triggerDialog(artists.name)}
+              onclick={() => setActiveIndex(idx)}
             >
               <td class={tdClass}>{artists.rank}</td>
               <td class="{tdClass} flex gap-2">
@@ -132,9 +137,7 @@
               >
               <td class="{tdClass} hidden md:block">{artists.genres}</td>
 
-              <td class={tdClass}>
-                <Modal cardType="artist" actionName="..." cardData={artists} />
-              </td>
+              <td class={tdClass}> </td>
             </tr>
           {/each}
         {/key}
@@ -148,6 +151,14 @@
     </table>
   </div>
 </div>
+
+<Modal
+  cardType="artist"
+  actionName="..."
+  cardData={topArtists[activeArtistIndex]}
+  {openModal}
+  {closeModalFromParent}
+/>
 <!-- Footer -->
 <footer class="flex justify-center">
   <!-- Pagination -->

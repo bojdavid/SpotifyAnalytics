@@ -30,7 +30,7 @@
     { filed: "Actions", hideOnMobile: false },
   ];
 
-  let recentTracks = $state([]);
+  let recentTracks: any[] = $state([]);
 
   // State
   let page = $state(1);
@@ -76,6 +76,17 @@
       order: isAscending ? "asc" : "desc",
     });
   }
+
+  //handle dialog
+  let activeTrackIndex: number = $state(0);
+  let openModal: boolean = $state(false);
+  const setActiveIndex = (i: number) => {
+    activeTrackIndex = i;
+    openModal = true;
+  };
+  const closeModalFromParent = () => {
+    openModal = false;
+  };
 </script>
 
 <div>
@@ -103,6 +114,7 @@
               delay: idx * 100,
             }}
             animate:flip
+            onclick={() => setActiveIndex(idx)}
           >
             <td class={tdClass}>
               <p class="text-lg text-center">{recentT.rank}</p>
@@ -150,11 +162,6 @@
             </td>
 
             <td class={tdClass}>
-              <Modal
-                cardType="track"
-                actionName="..."
-                cardData={recentT.track}
-              />
               <!--
           
               <button>
@@ -168,6 +175,12 @@
     </tbody>
   </table>
 </div>
+<Modal
+  cardType="track"
+  cardData={recentTracks[activeTrackIndex].track}
+  {openModal}
+  {closeModalFromParent}
+/>
 <footer class="flex justify-center">
   <!-- Pagination -->
   <Pagination
