@@ -1,7 +1,7 @@
 
 
 export type TopFilter = "top-tracks" | "top-artists" | "random" | "top-recent"
-let current : TopFilter  = $state("top-tracks")
+let current : TopFilter  = $state("top-artists")
 
 export const getCurrentTop = () =>{
     return current

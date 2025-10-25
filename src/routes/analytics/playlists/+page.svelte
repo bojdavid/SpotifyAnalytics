@@ -63,12 +63,13 @@
 </script>
 
 <section class="min-h-screen">
-  <header class="">
-    <h3
-      class="text-center border-1 border-spotify-green w-fit mx-auto px-10 rounded-sm my-5"
-    >
-      Playlists
-    </h3>
+  <header
+    class="text-center border-1 border-spotify-green w-fit mx-auto px-10 rounded-sm"
+  >
+    <h3 class="">Playlists</h3>
+    <p>
+      Total Playlists: {playlists.total}
+    </p>
   </header>
 
   {#if loading}
@@ -76,12 +77,8 @@
       <LoaderM />
     </div>
   {:else}
-    <p>
-      Total Playlists: {playlists.total}
-    </p>
-
     <!-- Select Playlist -->
-    <div class="relative h-15 px-10">
+    <div class="relative px-10 mb-5 h-30">
       <PlaylistsDropDown {activePlaylist} {playlists} {updateActivePlaylist} />
     </div>
 

@@ -14,19 +14,19 @@
 
 <details bind:this={detailsDropDown} class="mb-10 absolute z-10">
   <summary
-    class=" text-lg flex gap-10 hover:bg-spotify-green transition duration-500 ease-in-out border-1 border-spotify-green w-fit px-3 rounded-sm"
+    class=" text-lg flex gap-10 hover:bg-spotify-green bg-spotify-green/10 transition duration-500 ease-in-out border-1 border-spotify-green w-fit px-3 rounded-md py-3"
     >Current Playlist :
-    <div class="flex text-xs md:text-sm">
+    <div class="flex text-xs sm:text-md md:text-lg gap-4">
       <img
         src={activePlaylist.images[0].url}
         alt=""
-        class="w-10 h-10 cover rounded-full"
+        class="w-10 h-10 cover rounded-md"
       />
       <div>
         <p class=" ">
           {activePlaylist.name}
         </p>
-        <p class="text-xs">
+        <p class="text-xs md:text-sm font-bold text-gray-500">
           <span>Total Tracks: </span>
           {activePlaylist.tracks.total}
         </p>

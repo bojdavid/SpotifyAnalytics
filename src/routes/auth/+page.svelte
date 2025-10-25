@@ -2,11 +2,7 @@
   import "../../styles/app.css";
   import LightSwitch from "$lib/components/LightSwitch.svelte";
 
-  import {
-    PUBLIC_ACCESS_TOKEN,
-    PUBLIC_CLIENT_ID,
-    PUBLIC_REDIRECT_URI,
-  } from "$env/static/public";
+  import { PUBLIC_CLIENT_ID, PUBLIC_REDIRECT_URI } from "$env/static/public";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
