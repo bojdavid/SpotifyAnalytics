@@ -11,6 +11,7 @@
 
   import { setCurrentTop, type TopFilter } from "$lib/global/filter.svelte";
   import PlaylistCard from "$lib/components/analytics/home/PlaylistCard.svelte";
+  import PlaylistsTable from "$lib/components/analytics/home/PlaylistsTable.svelte";
 
   let visible = $state(false);
 
@@ -52,7 +53,7 @@
       loading = false;
       visible = true;
       //console.log("Available Devices --------", availableDevices);
-      console.log(playlists);
+      //console.log(playlists);
     }
   });
 
@@ -95,43 +96,13 @@
         background="bg-red-500"
       />
     </div>
-    <div
-      class="text-center border-1 border-spotify-green w-fit mx-auto px-10 rounded-sm mb-5"
-    >
-      <h3 class="">Playlists</h3>
-      <p class="text-sm font-semibold">
-        <span class="font-medium text-gray-800 dark:text-gray-200"
-          >Total Playlists :</span
-        >
-        {playlists.total}
-      </p>
-    </div>
-    <div class="relative w-full overflow-x-scroll">
-      <!-- Scrolling track -->
-      <div class="inline-flex gap-4 animate-marquee">
-        {#each playlists.items as playlist (playlist.id + "-dup")}
-          <div class="shrink-0">
-            <!-- fixed width so items don’t collapse -->
-            <PlaylistCard playlistData={playlist} />
-          </div>
-        {/each}
-      </div>
+
+    <!-- Playlist Table -->
+    <div class="flex justify-center">
+      <PlaylistsTable {playlists} />
     </div>
   {/if}
 </section>
 
 <style>
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    } /* move by half because we duplicated the list */
-  }
-  .animate-marquee {
-    animation: marquee 30s linear infinite;
-    white-space: nowrap; /* no line wrap */
-    will-change: transform;
-  }
 </style>

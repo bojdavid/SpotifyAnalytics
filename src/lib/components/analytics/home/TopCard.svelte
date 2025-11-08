@@ -39,7 +39,7 @@
                 >
                   {#each d.artists as artist}
                     <div class="w-2 h-2 rounded-lg bg-gray-500 my-auto"></div>
-                    <a class="" href={artist.href}>
+                    <a class="" href={artist.uri}>
                       {artist.name}
                     </a>
                   {/each}
