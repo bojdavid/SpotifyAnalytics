@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { setCurrentPlaylist } from "$lib/global/playlist.svelte";
+  import { goto } from "$app/navigation";
   let { playlists } = $props();
 
   console.log("this is the playlist", playlists);
@@ -27,6 +29,10 @@
     {#each playlists.items as playlist}
       <button
         class="flex justify-start gap-5 bg-spotify-green px-5 py-2 rounded-sm max-w-[500px]"
+        onclick={() => {
+          setCurrentPlaylist(playlist);
+          goto("/analytics/playlists");
+        }}
       >
         <!-- fixed width so items don’t collapse -->
         <div>

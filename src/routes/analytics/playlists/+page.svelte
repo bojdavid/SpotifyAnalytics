@@ -8,6 +8,10 @@
   import { ChevronDown } from "@lucide/svelte";
   import PlaylistsDropDown from "$lib/components/analytics/playlists/PlaylistsDropDown.svelte";
   import ActivePlayListTrackTable from "$lib/components/analytics/playlists/ActivePlayListTrackTable.svelte";
+  import {
+    setCurrentPlaylist,
+    getCurrentPlaylist,
+  } from "$lib/global/playlist.svelte";
 
   let visible = $state(false);
   let playlists: any = $state([]);
@@ -40,7 +44,11 @@
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
-      activePlaylist = playlists.items[0];
+      let currentP = getCurrentPlaylist();
+      if (currentP == null) {
+        setCurrentPlaylist(playlists.items[0]);
+      }
+      activePlaylist = getCurrentPlaylist();
       await tick();
       loading = false;
       visible = true;
