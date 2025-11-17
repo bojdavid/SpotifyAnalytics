@@ -36,7 +36,6 @@
           //getAvailableDevices(accessToken),
         ]);
     } catch (err: any) {
-      loading = false;
       err = JSON.parse(err.message);
       if (err.status == 401) {
         //alert(`user is unAuthorized : , ${err.message}`);
@@ -48,11 +47,9 @@
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
-      await tick();
+      //await tick();
       loading = false;
       visible = true;
-      //console.log("Available Devices --------", availableDevices);
-      //console.log(playlists);
     }
   });
 
@@ -68,7 +65,6 @@
       <LoaderM />
     </div>
   {:else if visible}
-    <h1 class="mx-5">Inspect Available Devices</h1>
     <div
       class=" flex gap-5 justify-center flex-wrap my-10"
       transition:fly={{ y: 50, duration: 2000 }}
