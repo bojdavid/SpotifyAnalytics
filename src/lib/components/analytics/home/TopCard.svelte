@@ -32,13 +32,15 @@
                 alt={d.name}
                 class="rounded-lg w-13 h-13 cover"
               />
-              <figcaption class="text-lg my-auto">
+              <figcaption class="text-sm md:text-lg my-auto">
                 {d.name}
                 <div
-                  class="text-sm font-medium text-spotify-black/50 flex gap-1"
+                  class=" text-[10px] md:text-sm font-medium text-spotify-black/50 flex gap-1"
                 >
                   {#each d.artists as artist}
-                    <div class="w-2 h-2 rounded-lg bg-gray-500 my-auto"></div>
+                    <div
+                      class=" w-1 h-1 md:w-2 md:h-2 rounded-lg bg-gray-500 my-auto"
+                    ></div>
                     <a class="" href={artist.uri}>
                       {artist.name}
                     </a>
@@ -52,7 +54,7 @@
                 alt={d.name}
                 class="rounded-lg w-13 h-13 cover"
               />
-              <figcaption class="text-lg my-auto">
+              <figcaption class=" text-sm md:text-lg my-auto">
                 {d.name}
               </figcaption>
             {/if}
@@ -62,10 +64,10 @@
                 alt={d.track.name}
                 class="rounded-full w-13 h-13 cover rounded-lg"
               />
-              <figcaption class="text-lg my-auto">
+              <figcaption class="text-sm md:text-lg my-auto">
                 {d.track.name}
                 <div
-                  class="text-xs font-medium text-spotify-black/50 flex gap-6"
+                  class=" text-[10px] md:text-xs font-medium text-spotify-black/50 flex gap-6"
                 >
                   <p class="text-[10px] font-bold">
                     <span class="text-gray-800/50 font-light"

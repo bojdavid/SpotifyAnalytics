@@ -25,7 +25,7 @@
     { field: "Rank", hideOnMobile: false },
     { field: "Track", hideOnMobile: false },
     { field: "Artists(s)", hideOnMobile: true },
-    { field: "Last Played", hideOnMobile: true },
+    { field: "Last Played", hideOnMobile: false },
     { field: "Popularity", hideOnMobile: true },
     { filed: "Actions", hideOnMobile: false },
   ];
@@ -159,15 +159,6 @@
                   ></div>
                 </div>
               </div>
-            </td>
-
-            <td class={tdClass}>
-              <!--
-          
-              <button>
-                <Ellipsis />
-              </button>
-            -->
             </td>
           </tr>
         {/each}

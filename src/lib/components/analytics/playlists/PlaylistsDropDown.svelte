@@ -12,7 +12,7 @@
   };
 </script>
 
-<details bind:this={detailsDropDown} class="mb-10 absolute z-10">
+<details bind:this={detailsDropDown} class="left-2 absolute z-10">
   <summary
     class=" text-lg flex gap-10 hover:bg-spotify-green bg-spotify-green/10 transition duration-500 ease-in-out border-1 border-spotify-green w-fit px-3 rounded-md py-3"
     >Current Playlist :

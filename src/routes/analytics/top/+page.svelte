@@ -71,12 +71,12 @@
         <LoaderM />
       </div>
     {:else}
-      <div class="flex justify-evenly px-5 items-center">
+      <div class="flex justify-evenly px-5 items-center mt-5">
         <!-- CATEGORY OPTION -->
-        <label class="label flex gap-5 items-center mt-5">
-          <span class="label-text text-lg">Category To View</span>
+        <label class="label flex gap-5 items-center">
+          <span class="label-text text-md md:text-lg">Category: </span>
           <select
-            class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center py-2"
+            class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center py-2 text-xs md:text-lg"
             bind:value={category}
           >
             {#each filters as filter}
@@ -86,7 +86,7 @@
         </label>
         {#if category != "Listening History"}
           <div
-            class="whitespace-nowrap text-lg bg-spotify-green px-5 py-2 font-bold rounded-sm shadow-lg shadow-spotify-green"
+            class="whitespace-nowrap text-xs md:text-lg bg-spotify-green px-2 md:px-5 py-2 font-bold rounded-sm shadow-lg"
           >
             <span class="font-light">
               {category == "Top Tracks"

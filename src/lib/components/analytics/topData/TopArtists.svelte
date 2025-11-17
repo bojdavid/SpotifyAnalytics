@@ -44,8 +44,6 @@
     { field: "Artists", hideOnMobile: false },
     { field: "Followers", hideOnMobile: false },
     { field: "Genres", hideOnMobile: true },
-    { field: "Actions", hideOnMobile: false },
-    { filed: "", hideOnMobile: false },
   ];
 
   //Filters

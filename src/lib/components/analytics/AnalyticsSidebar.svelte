@@ -56,12 +56,19 @@
         {/each}
       </main>
       <footer class="mt-auto mb-6 flex flex-col">
-        <a href="/analytics/settings" class="">Settings</a>
+        <a
+          href="/analytics/settings"
+          onclick={() => {
+            closeSideBar();
+          }}
+          class="">Settings</a
+        >
         <a
           href="./"
           class="text-red-500"
           onclick={() => {
             sessionStorage.clear();
+            closeSideBar();
           }}>Logout</a
         >
       </footer>

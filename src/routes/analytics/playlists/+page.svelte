@@ -1,5 +1,4 @@
 <script lang="ts">
-  import PlaylistCard from "$lib/components/analytics/home/PlaylistCard.svelte";
   import { getUsersPlaylists, getPlaylistTracks } from "../../../api/playlist";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
@@ -86,7 +85,7 @@
     </div>
   {:else}
     <!-- Select Playlist -->
-    <div class="relative px-10 mb-5 h-30">
+    <div class="relative px-10 mb-5 h-30 mt-5 mx-auto">
       <PlaylistsDropDown {activePlaylist} {playlists} {updateActivePlaylist} />
     </div>
 
@@ -107,33 +106,8 @@
         <ActivePlayListTrackTable playlistTracks={activePlaylistTracks} />
       </div>
     {/if}
-
-    <div class="relative w-full overflow-x-scroll">
-      <!-- Scrolling track -->
-      <div class="inline-flex gap-4 animate-marquee">
-        {#each playlists.items as playlist}
-          <div class="shrink-0">
-            <!-- fixed width so items don’t collapse -->
-            <PlaylistCard playlistData={playlist} />
-          </div>
-        {/each}
-      </div>
-    </div>
   {/if}
 </section>
 
 <style>
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    } /* move by half because we duplicated the list */
-  }
-  .animate-marquee {
-    animation: marquee 30s linear infinite;
-    white-space: nowrap; /* no line wrap */
-    will-change: transform;
-  }
 </style>

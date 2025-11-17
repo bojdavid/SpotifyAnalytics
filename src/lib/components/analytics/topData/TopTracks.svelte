@@ -17,6 +17,7 @@
   import { fly } from "svelte/transition";
   import { flip } from "svelte/animate";
   import SortBy from "$lib/components/common/SortBy.svelte";
+  import { hideOnMobile } from "$lib/utils/table";
 
   let { topTracks_ } = $props();
 
@@ -35,7 +36,6 @@
     { field: "Artists(s)", hideOnMobile: true },
     { field: "Duration", hideOnMobile: true },
     { field: "Popularity", hideOnMobile: true },
-    { filed: "Actions", hideOnMobile: false },
   ];
 
   // State
@@ -131,7 +131,7 @@
                 {track.name}
               </div>
             </td>
-            <td class={tdClass}>
+            <td class="{tdClass} {hideOnMobile}">
               <div class="text-sm">
                 {#each track.artists as artist, idx}
                   <span>
@@ -141,10 +141,10 @@
                 {/each}
               </div>
             </td>
-            <td class="{tdClass} text-sm">
+            <td class="{tdClass}  {hideOnMobile} text-sm">
               {formatDuration(track.duration_ms)}
             </td>
-            <td class={tdClass}>
+            <td class="{tdClass} {hideOnMobile}">
               <div class="flex items-center">
                 <div class="text-sm font-medium">
                   {track.popularity}
@@ -156,15 +156,6 @@
                   ></div>
                 </div>
               </div>
-            </td>
-
-            <td class={tdClass}>
-              <!--
-          
-              <button>
-                <Ellipsis />
-              </button>
-            -->
             </td>
           </tr>
         {/each}

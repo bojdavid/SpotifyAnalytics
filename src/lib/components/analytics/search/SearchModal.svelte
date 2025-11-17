@@ -36,9 +36,9 @@
 <section>
   <button
     onclick={openDialog}
-    class="flex gap-5 items-center max-w-full w-[150px] md:w-[300px] border-1 border-surface-200 rounded-lg px-3 py-1"
+    class="flex gap-2 md:gap-5 items-center max-w-[300px] w-full border-1 border-surface-200 rounded-lg px-1 md:px-3 py-1"
   >
-    <Search size={20} />
+    <Search class="w-3 h-3 md:h-4 md:w-4" />
     <TypingAnimation
       items={["track", "albums", "playlist", "episode", "artist", "shows"]}
       prefix="Search By"
