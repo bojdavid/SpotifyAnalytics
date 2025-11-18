@@ -111,7 +111,11 @@
               delay: idx * 100,
             }}
             animate:flip
-            onclick={() => setActiveIndex(idx)}
+            onclick={() => {
+              if (track.rank) {
+                setActiveIndex(track.rank + 1);
+              }
+            }}
           >
             <td class={tdClass}>
               <p class="text-lg">

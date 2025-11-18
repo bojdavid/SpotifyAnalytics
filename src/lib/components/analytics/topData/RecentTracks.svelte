@@ -114,7 +114,11 @@
               delay: idx * 100,
             }}
             animate:flip
-            onclick={() => setActiveIndex(idx)}
+            onclick={() => {
+              if (recentT.rank) {
+                setActiveIndex(recentT.rank - 1);
+              }
+            }}
           >
             <td class={tdClass}>
               <p class="text-lg text-center">{recentT.rank}</p>

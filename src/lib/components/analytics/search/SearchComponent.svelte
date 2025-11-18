@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Search, Loader, SlidersHorizontal } from "@lucide/svelte";
+  import SL from "../../../assets/spotify_logo.png";
   import {
     type SearchQueryType,
     search,
@@ -155,7 +156,7 @@
       {#if searchData == undefined || searchData == null || searchData == ""}
         <div class="w-full h-full flex justify-center items-center flex-col">
           <img
-            src="/spotify_logo.png"
+            src={SL}
             alt="spotify-logo"
             class="w-50 h-auto cover opacity-50"
           />

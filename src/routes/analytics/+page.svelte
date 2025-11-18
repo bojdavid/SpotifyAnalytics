@@ -1,8 +1,17 @@
 <script lang="ts">
   import TopCard from "$lib/components/analytics/home/TopCard.svelte";
-  import { onMount, tick } from "svelte";
-  import { getTopArtists } from "../../api/artists";
-  import { getTopTracks, getRecentTracks } from "../../api/tracks";
+  import { onMount } from "svelte";
+  import {
+    getTopArtists,
+    getTopArtists_4weeks,
+    getTopArtists_1year,
+  } from "../../api/artists";
+  import {
+    getTopTracks,
+    getTopTracks_1year,
+    getTopTracks_4weeks,
+    getRecentTracks,
+  } from "../../api/tracks";
   import { getAvailableDevices } from "../../api/player";
   import { getUsersPlaylists } from "../../api/playlist";
   import { goto } from "$app/navigation";
@@ -29,8 +38,8 @@
 
       [topTracksData, topArtistsData, recentTracksData, playlists] =
         await Promise.all([
-          getTopTracks(accessToken),
-          getTopArtists(accessToken),
+          getTopTracks_1year(accessToken),
+          getTopArtists_4weeks(accessToken),
           getRecentTracks(accessToken),
           getUsersPlaylists(accessToken),
           //getAvailableDevices(accessToken),
@@ -47,7 +56,6 @@
       console.error("The error message:", err.message);
       //Redirect back to the auth page if accessToken has expired.
     } finally {
-      //await tick();
       loading = false;
       visible = true;
     }
@@ -71,21 +79,21 @@
     >
       <TopCard
         title="Top 10 Tracks"
-        data={topTracksData.items.slice(0, 5)}
+        data={topTracksData.items.slice(0, 10)}
         action={viewMore}
         type="top-tracks"
         background="bg-yellow-500"
       />
       <TopCard
         title="Top 10  Artists"
-        data={topArtistsData.items.slice(0, 5)}
+        data={topArtistsData.items.slice(0, 10)}
         action={viewMore}
         type="top-artists"
         background="bg-surface-500"
       />
       <TopCard
         title="Listening History"
-        data={recentTracksData.items.slice(0, 5)}
+        data={recentTracksData.items.slice(0, 10)}
         action={viewMore}
         type="top-recent"
         background="bg-red-500"

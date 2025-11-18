@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X, UserPlus, UserMinus, Loader } from "@lucide/svelte";
+  import { X, User, Loader } from "@lucide/svelte";
   import { formatFollowerCount } from "$lib/global/functions";
   import { onMount } from "svelte";
   import {
@@ -71,31 +71,25 @@
         {#if loading}
           <div class="w-25 h-4 bg-spotify-green/50 animate-pulse"></div>
         {:else if userFollowsArtist}
-          <button
+          <div
             class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
-                  disabled:cursor-not-allowed disabled:text-spotify-green/50
             "
-            disabled={follow_unFollow_Artist_Pending}
-            onclick={unfollow_artist}
           >
             <span>
-              <UserMinus size={20} />
+              <User size={20} />
             </span>
-            Unfollow Artist
-          </button>
+            Following
+          </div>
         {:else}
-          <button
+          <div
             class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
-                  disabled:cursor-not-allowed disabled:text-spotify-green/50
             "
-            disabled={follow_unFollow_Artist_Pending}
-            onclick={follow_artist}
           >
             <span class="text-xs">
-              <UserPlus size={20} />
+              <User size={20} />
             </span>
-            Follow Artist
-          </button>
+            Not Following
+          </div>
         {/if}
         <!-- Load indicator for when user clicks the follow button -->
         {#if follow_unFollow_Artist_Pending}

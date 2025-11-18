@@ -64,7 +64,7 @@
           class="">Settings</a
         >
         <a
-          href="./"
+          href="/"
           class="text-red-500"
           onclick={() => {
             sessionStorage.clear();

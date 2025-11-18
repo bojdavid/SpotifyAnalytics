@@ -3,6 +3,15 @@
   import { goto } from "$app/navigation";
   let { playlists } = $props();
 
+  let searchQuery: string = $state("");
+  let filteredPlaylists: any[] = $state(playlists.items);
+
+  const updateFIlterPlaylist = () => {
+    filteredPlaylists = playlists.items.filter((playlist: any) =>
+      playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   console.log("this is the playlist", playlists);
 </script>
 
@@ -23,10 +32,12 @@
     type="text"
     placeholder="Search Playlists"
     class="bg-gray-500 rounded-lg px-10 py-2 text-lg mb-5"
+    bind:value={searchQuery}
+    oninput={updateFIlterPlaylist}
   />
 
   <article class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-    {#each playlists.items as playlist}
+    {#each filteredPlaylists as playlist}
       <button
         class="flex justify-start gap-5 bg-spotify-green px-5 py-2 rounded-sm max-w-[500px]"
         onclick={() => {

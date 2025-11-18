@@ -26,10 +26,14 @@
   );
 
   //handle dialog
-  let activeTrackIndex: number = $state(0);
+  let activeTrack: any = $state("0");
   let openModal: boolean = $state(false);
-  const setActiveIndex = (i: number) => {
-    activeTrackIndex = i;
+
+  const setActiveIndex = (i: string) => {
+    activeTrack = playlistTracks.items.filter(
+      (item: any) => item.track.id === i
+    );
+
     openModal = true;
   };
   const closeModalFromParent = () => {
@@ -63,7 +67,7 @@
               delay: idx * 100,
             }}
             animate:flip
-            onclick={() => setActiveIndex(idx)}
+            onclick={() => setActiveIndex(track.track.id)}
           >
             <td class="{tdClass} flex gap-2">
               <div class="w-10 h-10">
@@ -111,7 +115,7 @@
   </table>
   <Modal
     cardType="track"
-    cardData={playlistTracks.items[activeTrackIndex].track}
+    cardData={activeTrack[0].track}
     {openModal}
     {closeModalFromParent}
   />

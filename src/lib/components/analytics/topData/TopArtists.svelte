@@ -78,7 +78,7 @@
   //handle dialog
   let activeArtistIndex: number = $state(0);
   let openModal: boolean = $state(false);
-  const setActiveIndex = (i: number) => {
+  const setActiveIndex = (i: any) => {
     activeArtistIndex = i;
     openModal = true;
     console.log(topArtists[activeArtistIndex]);
@@ -114,7 +114,11 @@
                 delay: idx * 100,
               }}
               animate:flip
-              onclick={() => setActiveIndex(idx)}
+              onclick={() => {
+                if (artists.rank) {
+                  setActiveIndex(artists.rank - 1);
+                }
+              }}
             >
               <td class={tdClass}>{artists.rank}</td>
               <td class="{tdClass} flex gap-2">

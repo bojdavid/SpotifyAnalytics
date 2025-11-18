@@ -10,6 +10,15 @@
       detailsDropDown.open = false;
     }
   };
+
+  let searchQuery: string = $state("");
+  let filteredPlaylists: any[] = $state(playlists.items);
+
+  const updateFIlterPlaylist = () => {
+    filteredPlaylists = playlists.items.filter((playlist: any) =>
+      playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
 </script>
 
 <details bind:this={detailsDropDown} class="left-2 absolute z-10">
@@ -40,7 +49,14 @@
   <div
     class="border-spotify-green/50 border-1 rounded-sm py-2 font-bold text-lg flex flex-col gap-5 max-w-full w-[500px] h-[700px] overflow-y-scroll bg-white/50 dark:bg-spotify-black/80 backdrop-blur"
   >
-    {#each playlists.items as playlist}
+    <input
+      type="text"
+      placeholder="Search Playlists"
+      class="bg-gray-500 rounded-sm px-5 py-2 text-lg mb-2 flex justify-start mr-3"
+      bind:value={searchQuery}
+      oninput={updateFIlterPlaylist}
+    />
+    {#each filteredPlaylists as playlist}
       <button
         value={playlist}
         class="flex gap-5 hover:bg-spotify-green/50 transition duration-300 ease-in-out px-3 {playlist.id ==
