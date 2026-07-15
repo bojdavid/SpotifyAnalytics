@@ -17,7 +17,9 @@ export const load: PageLoad = async ({ params }) => {
     const codeVerifier = localStorage.getItem("code_verifier");
 
     if (!codeVerifier) {
-      throw new Error("Code verifier not found in localStorage.");
+      console.warn("Code verifier not found in localStorage. Redirecting to login.");
+      window.location.href = "/auth";
+      return;
     }
 
     const url = "https://accounts.spotify.com/api/token";
@@ -72,7 +74,13 @@ export const load: PageLoad = async ({ params }) => {
   };
 
   const urlParams = new URLSearchParams(window.location.search);
-    let code: any = urlParams.get("code");
+  let code: any = urlParams.get("code");
 
-getToken(code);
+  if (!code) {
+    console.warn("No authorization code found in URL. Redirecting to login.");
+    window.location.href = "/auth";
+    return;
+  }
+
+  getToken(code);
 }

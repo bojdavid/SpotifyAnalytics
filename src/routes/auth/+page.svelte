@@ -7,18 +7,26 @@
 
   let { data }: PageProps = $props();
 
-  console.log(data);
+  // The code challenge and verifier are generated on the server (`+page.server.ts` or `+layout.server.ts`)
+  // to initiate the PKCE (Proof Key for Code Exchange) authorization flow.
   const codeChallenge = data.codeChallenge;
   const codeVerifier: string = data.codeVerifier;
   const clientId = PUBLIC_CLIENT_ID;
   const redirectUri = PUBLIC_REDIRECT_URI;
 
+  /**
+   * Initiates the Spotify OAuth 2.0 PKCE flow.
+   * Redirects the user to Spotify's authorization page.
+   */
   const authorize = () => {
+    // Define the scopes (permissions) our app needs from the user
     const scope =
       "user-read-private user-read-email user-top-read user-read-recently-played user-read-playback-position user-follow-read playlist-read-private playlist-read-collaborative";
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
-    // generated in the previous step
+    // Store the code verifier in localStorage. 
+    // We will need it later when the user is redirected back to our app 
+    // to exchange the authorization code for an access token.
     window.localStorage.setItem("code_verifier", codeVerifier);
 
     const params = {
@@ -31,34 +39,48 @@
     };
 
     authUrl.search = new URLSearchParams(params).toString();
+    // Redirect user to Spotify login
     window.location.href = authUrl.toString();
   };
 </script>
 
-<main class="flex items-center justify-center m-auto w-full h-screen">
-  <div
-    class=" p-5 mx-2 shadow-md shadow-secondary-900 dark:shadow-secondary-200"
-  >
-    <div class="text-center flex justify-center">
+<main class="flex items-center justify-center min-h-screen bg-surface-50-950-token relative overflow-hidden p-4">
+  <!-- Subtle Background Element -->
+  <div class="absolute inset-0 z-0 flex items-center justify-center opacity-10 pointer-events-none">
+    <div class="w-96 h-96 bg-[var(--color-spotify-green)] blur-[100px] rounded-full"></div>
+  </div>
+
+  <div class="card p-8 sm:p-10 max-w-md w-full shadow-xl z-10 border border-surface-200-700-token bg-surface-100-800-token/80 backdrop-blur-md">
+    <div class="flex justify-end mb-6">
       <LightSwitch />
     </div>
-    <h1 class=" text-2xl sm:text-3xl font-bold mx-auto text-center mt-5">
-      BOJ Spotify Analytics
-    </h1>
 
-    <h4 class="text-xs font-thin mx-auto text-center mb-6">
-      Connect Your Spotify And Get An Indepth Analytics Of Your Data
-    </h4>
+    <div class="text-center space-y-6">
+      <!-- Spotify-esque icon placeholder or simple logo design -->
+      <div class="mx-auto w-16 h-16 bg-[var(--color-spotify-green)] rounded-full flex items-center justify-center shadow-lg shadow-[var(--color-spotify-green)]/30">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+      </div>
 
-    <button
-      onclick={authorize}
-      class="p-3 text-md dark:bg-secondary-900 bg-secondary-900
-            mx-auto flex items-center my-5 rounded-lg
-            text-surface-50 font-bold
-            hover:bg-transparent hover:border-2 hover:border-secondary-700 hover:text-surface-900 dark:hover:text-surface-100
-            transition duration-300 ease-in-out
-            "
-      >Login With Spotify
-    </button>
+      <div class="space-y-2">
+        <h1 class="h2 font-bold tracking-tight">
+          Spotify Analytics
+        </h1>
+        <p class="text-surface-600-300-token text-sm">
+          Connect your Spotify account to get an in-depth, beautiful analysis of your listening habits and top tracks.
+        </p>
+      </div>
+
+      <button
+        onclick={authorize}
+        class="btn w-full font-bold text-white shadow-md transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+        style="background-color: var(--color-spotify-green);"
+      >
+        Login With Spotify
+      </button>
+      
+      <p class="text-xs text-surface-500-400-token mt-4">
+        We do not store your Spotify data on our servers.
+      </p>
+    </div>
   </div>
 </main>

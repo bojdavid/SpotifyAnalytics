@@ -5,35 +5,33 @@
   import SearchModal from "./search/SearchModal.svelte";
 </script>
 
-<nav class=" flex justify-between px-5 pt-5 bg-white/30 backdrop-blur w-full">
-  <div>
-    <div class="flex gap-2 items-center">
-      <h4 class="text-3xl">
-        Welcome {loading ? "" : username}
-      </h4>
+<nav class="flex justify-between items-center px-4 sm:px-8 py-4 bg-surface-100-800-token/80 backdrop-blur-md border-b border-surface-200-700-token z-30 sticky top-0">
+  <div class="flex items-center gap-4">
+    <button class="md:hidden p-2 rounded-lg text-surface-500-400-token hover:bg-surface-200-700-token hover:text-surface-900-50-token transition-colors" onclick={toggleSideBar}>
+      <Menu size={24} />
+    </button>
+    
+    <div class="hidden sm:block">
+      {#if loading}
+        <div class="space-y-2">
+          <div class="w-48 h-6 rounded-md bg-surface-300-600-token animate-pulse"></div>
+          <div class="w-32 h-3 rounded-md bg-surface-300-600-token animate-pulse"></div>
+        </div>
+      {:else if username}
+        <h2 class="h3 font-bold tracking-tight text-surface-900-50-token">
+          Welcome back, {username}
+        </h2>
+        <p class="text-xs text-surface-500-400-token font-medium">
+          {country} <span class="mx-1 opacity-50">•</span> {email}
+        </p>
+      {/if}
     </div>
-    {#if loading}
-      <div class="h-[10px] flex w-60 gap-5">
-        <div
-          class="w-20 h-full dark:bg-surface-800 bg-surface-300 animate-pulse"
-        ></div>
-        <div
-          class="w-20 h-full dark:bg-surface-800 bg-surface-300 animate-pulse"
-        ></div>
-      </div>
-    {:else}
-      <p class=" text-surface-200 text-[8px] md:text-xs">
-        {country} <span>||</span>
-        {email}
-      </p>
-    {/if}
   </div>
-  <div class="flex gap-5 justify-end items-center relative">
+
+  <div class="flex items-center gap-4 sm:gap-6">
     <SearchModal />
-    <div class="sm:block hidden">
-      <LightSwitch />
+    <div class="md:hidden">
+      <!-- SearchModal might already have an icon, but we hide light switch on mobile since it's in the sidebar now -->
     </div>
-    <button class="md:hidden" onclick={toggleSideBar}><Menu size={20} /></button
-    >
   </div>
 </nav>

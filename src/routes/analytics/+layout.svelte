@@ -9,11 +9,10 @@
   import { goto } from "$app/navigation";
   import "../../styles/app.css";
 
-  let openSideBar = $state(true);
+  let openSideBar = $state(false);
 
   const toggleSideBar = () => {
     openSideBar = !openSideBar;
-    console.log(openSideBar);
   };
 
   let isOffline: boolean = $state(false);
@@ -22,86 +21,79 @@
 
   onMount(async () => {
     isOffline = updateNetworkStatus();
-    console.log("offline status --------", isOffline);
     let accessToken: any = localStorage.getItem("access_token");
     if (!isOffline) {
       loading = true;
       try {
         let res = await getProfile(accessToken);
         userProfile = res;
-      } catch (err: any) {
-        const strError = JSON.parse(err.message);
-
-        if (strError.status == 401) {
-          alert(`user is unAuthorized : , ${strError.message}`);
-          goto("/auth");
-        }
-        console.error("The error message", strError);
-      } finally {
         setUserData(userProfile);
+      } catch (err: any) {
+        if (err.message) {
+          try {
+             const strError = JSON.parse(err.message);
+             if (strError.status == 401) {
+               goto("/auth");
+               return;
+             }
+          } catch(e) {}
+        }
+        console.error("Error fetching profile:", err);
+      } finally {
         loading = false;
-        //console.log("user data after set data------ ", userData);
       }
     }
   });
 </script>
 
-<section
-  class="max-w-[2000px] mx-auto overflow-x-hidden overflow-y-display flex relative w-full"
->
-  <!-- Side Bar -->
-  <div class="md:hidden">
-    <aside
-      class="w-full ease-in-out transform transition-all duration-500 {openSideBar
-        ? ' -translate-x-full opacity-0  '
-        : ' translate-x-0 opacity-100 fixed'} absolute overflow-y-auto z-50"
-    >
-      <Sidebar
-        closeSideBar={toggleSideBar}
-        username={userData.display_name}
-        imageUrl={userData.images[1]}
-        {loading}
-      />
-    </aside>
-  </div>
-  <!-- End of side bar for small screens-->
+<div class="flex h-screen w-full bg-surface-50-950-token overflow-hidden relative">
+  <!-- Mobile Sidebar Overlay -->
+  {#if openSideBar}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="fixed inset-0 bg-surface-900/50 backdrop-blur-sm z-40 md:hidden"
+      onclick={toggleSideBar}
+    ></div>
+  {/if}
 
-  <!-- Side Bar-->
-  <div class="hidden md:block">
-    <aside class=" w-[260px] fixed inset-y-0 z-50">
-      <Sidebar
-        closeSideBar={toggleSideBar}
-        username={userData.display_name}
-        imageUrl={userData.images[1]}
-        {loading}
-      />
-    </aside>
-  </div>
-  <!-- End Of Sidebar-->
-
-  <div
-    class="w-full min-h-screen z-10"
-    style="background-image: url({userData.images[0].url}); 
-          background-size: cover; 
-          background-position: center;
-          background-attachment: fixed;"
+  <!-- Sidebar (Mobile & Desktop) -->
+  <aside
+    class="fixed inset-y-0 left-0 z-50 w-[260px] transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 {openSideBar ? 'translate-x-0' : '-translate-x-full'}"
   >
-    <main
-      class="md:pl-[260px] w-auto z-10 bg-surface-50/50 dark:bg-surface-800/50 backdrop-blur-lg"
-    >
-      <NavBar
-        username={userData.display_name}
-        country={userData.country}
-        email={userData.email}
-        imageUrl={userData.images[1]}
-        {toggleSideBar}
-        {loading}
-      />
+    <Sidebar
+      closeSideBar={toggleSideBar}
+      username={userData?.display_name}
+      imageUrl={userData?.images?.[1]}
+      {loading}
+    />
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-900 dark:to-surface-800">
+    <NavBar
+      username={userData?.display_name}
+      country={userData?.country}
+      email={userData?.email}
+      imageUrl={userData?.images?.[1]}
+      {toggleSideBar}
+      {loading}
+    />
+    
+    <div class="flex-1 overflow-y-auto relative">
       {#if !isOffline}
         {@render children?.()}
       {:else}
-        <div class="text-red-500 text-4xl">No network, try again later</div>
+        <div class="flex h-full w-full items-center justify-center">
+          <div class="text-center space-y-4">
+            <h2 class="text-error-500-400-token h2 font-bold">You are offline</h2>
+            <p class="text-surface-500-400-token">Please check your internet connection and try again.</p>
+          </div>
+        </div>
       {/if}
-    </main>
-  </div>
-</section>
+    </div>
+  </main>
+</div>
+
+<style>
+</style>

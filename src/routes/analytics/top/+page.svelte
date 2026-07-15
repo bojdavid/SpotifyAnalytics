@@ -1,12 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import TopArtists from "$lib/components/analytics/topData/TopArtists.svelte";
-  import type { SpotifyTrack, TopArtistsType } from "$lib/types/spotifyTypes1";
+  import type { TopArtistsType } from "$lib/types/spotifyTypes1";
   import { getTopArtists } from "../../../api/artists";
   import { getTopTracks, getRecentTracks } from "../../../api/tracks";
   import TopTracks from "$lib/components/analytics/topData/TopTracks.svelte";
   import RecentTracks from "$lib/components/analytics/topData/RecentTracks.svelte";
   import LoaderM from "$lib/components/common/LoaderM.svelte";
+  import { BarChart3 } from "@lucide/svelte";
+  import { fade, fly } from "svelte/transition";
 
   import {
     getCurrentTop,
@@ -28,6 +30,7 @@
     limit: 0,
   });
   let loading: boolean = $state(false);
+  let visible: boolean = $state(false);
 
   onMount(async () => {
     try {
@@ -41,84 +44,93 @@
       ]);
     } catch (err: any) {
       loading = false;
-      err = JSON.parse(err.message);
+      if (err.message) {
+         try { err = JSON.parse(err.message); } catch(e){}
+      }
       if (err.status == 401) {
-        alert(`user is unAuthorized : , ${err.message}`);
         goto("/auth");
         return;
       }
-
-      alert(`Error: ${JSON.stringify(err)}`);
-      console.error("The error message:", err.message);
-      //Redirect back to the auth page if accessToken has expired.
+      console.error("Error fetching top data:", err);
     } finally {
-      //include ranking into the
-
-      console.log("this is the tops tracks data", topTracksData);
       loading = false;
+      visible = true;
     }
   });
 
   const filters: string[] = ["Top Artists", "Top Tracks", "Listening History"];
-
-  let category: string = $state(getFilterStringFromType(getCurrentTop()));
+  let category: string = $state(getFilterStringFromType(getCurrentTop()) || "Top Artists");
+  
+  const getCategoryCount = (cat: string) => {
+    if (cat === "Top Artists") return topArtistsData.total;
+    if (cat === "Top Tracks") return topTracksData.total;
+    if (cat === "Listening History") return recentTracksData.items?.length || 0;
+    return 0;
+  };
 </script>
 
-<main class="px-2">
-  <div>
-    {#if loading}
-      <div class="h-screen w-full flex justify-center items-center">
-        <LoaderM />
+<section class="min-h-screen bg-surface-50-950-token pb-20">
+  <!-- Page Header -->
+  <header class="w-full p-4 sm:px-8 py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 z-20 relative bg-surface-100-800-token shadow-sm backdrop-blur-sm bg-opacity-80 sticky top-0 border-b border-surface-200-700-token">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-[var(--color-spotify-green)] rounded-full flex items-center justify-center shadow-lg shadow-[var(--color-spotify-green)]/30">
+        <BarChart3 size={20} class="text-white" />
       </div>
-    {:else}
-      <div class="flex justify-evenly px-5 items-center mt-5">
-        <!-- CATEGORY OPTION -->
-        <label class="label flex gap-5 items-center">
-          <span class="label-text text-md md:text-lg">Category: </span>
-          <select
-            class="outline-none focus:border-spotify-green/50 border-1 dark:border-gray-700 border-gray-400 rounded-sm text-center py-2 text-xs md:text-lg"
-            bind:value={category}
-          >
-            {#each filters as filter}
-              <option value={filter}> {filter}</option>
-            {/each}
-          </select>
-        </label>
-        {#if category != "Listening History"}
-          <div
-            class="whitespace-nowrap text-xs md:text-lg bg-spotify-green px-2 md:px-5 py-2 font-bold rounded-sm shadow-lg"
-          >
-            <span class="font-light">
-              {category == "Top Tracks"
-                ? "Tracks"
-                : category == "Top Artists"
-                  ? "Artists"
-                  : ""} :
-            </span>
-            {category == "Top Artists"
-              ? topArtistsData.total
-              : category == "Top Tracks"
-                ? topTracksData.total
-                : ""}
+      <div>
+        <h1 class="h3 font-bold tracking-tight bg-gradient-to-br from-surface-900 to-surface-500 dark:from-surface-50 dark:to-surface-300 bg-clip-text text-transparent">
+          Top Data & Trends
+        </h1>
+        <p class="text-xs text-surface-500-400-token mt-0.5">
+          Your personalized Spotify insights
+        </p>
+      </div>
+    </div>
+  </header>
+
+  {#if loading}
+    <div class="min-h-[60vh] w-full flex flex-col justify-center items-center gap-4" in:fade>
+      <LoaderM />
+      <p class="text-surface-500-400-token animate-pulse font-medium">Analyzing your data...</p>
+    </div>
+  {:else if visible}
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mt-8">
+      
+      <!-- Tab Navigation -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8" in:fly={{ y: -20, duration: 600 }}>
+        <div class="bg-surface-200-700-token/50 p-1 rounded-xl inline-flex w-full sm:w-auto overflow-x-auto no-scrollbar shadow-inner">
+          {#each filters as filter}
+            <button
+              class="px-4 py-2 text-sm font-semibold rounded-lg transition-all whitespace-nowrap {category === filter ? 'bg-surface-50-950-token text-[var(--color-spotify-green)] shadow-sm' : 'text-surface-600-300-token hover:text-surface-900-50-token'}"
+              onclick={() => category = filter}
+            >
+              {filter}
+            </button>
+          {/each}
+        </div>
+        
+        <!-- Category Stats -->
+        <div class="bg-surface-100-800-token border border-surface-200-700-token px-4 py-2 rounded-xl shadow-sm text-sm font-medium flex items-center gap-2">
+          <span class="text-surface-500-400-token">Total {category.includes('Artists') ? 'Artists' : category.includes('Tracks') ? 'Tracks' : 'History'}:</span>
+          <span class="text-surface-900-50-token font-bold bg-surface-200-700-token px-2 py-0.5 rounded-md">{getCategoryCount(category)}</span>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="w-full relative min-h-[400px]">
+        {#if category == "Top Artists"}
+          <div in:fade={{ duration: 400 }}>
+            <TopArtists topArtists_={topArtistsData} />
+          </div>
+        {:else if category == "Top Tracks"}
+          <div in:fade={{ duration: 400 }}>
+            <TopTracks topTracks_={topTracksData} />
+          </div>
+        {:else if category == "Listening History"}
+          <div in:fade={{ duration: 400 }}>
+            <RecentTracks recentTracks_={recentTracksData} />
           </div>
         {/if}
       </div>
-      {#if category == "Top Artists"}
-        <!-- TOP ARTISTS-->
-        <div class="mt-10 w-full">
-          <TopArtists topArtists_={topArtistsData} />
-        </div>
-      {:else if category == "Top Tracks"}
-        <!-- Top Tracks -->
-        <div class="mt-10">
-          <TopTracks topTracks_={topTracksData} />
-        </div>
-      {:else if category == "Listening History"}
-        <!-- Top Tracks -->
-        <div class="mt-10">
-          <RecentTracks recentTracks_={recentTracksData} />
-        </div>
-      {/if}
-    {/if}
-  </div>
-</main>
+    </div>
+  {/if}
+</section>

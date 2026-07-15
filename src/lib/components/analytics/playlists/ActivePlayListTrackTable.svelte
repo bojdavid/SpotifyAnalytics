@@ -15,7 +15,6 @@
 
   let { playlistTracks } = $props();
 
-  console.log("this is the playlist tracks", playlistTracks);
   const fields: string[] = ["Track", "Artist(s)", "Duration", "Popularity"];
 
   // State
@@ -33,7 +32,6 @@
     activeTrack = playlistTracks.items.filter(
       (item: any) => item.track.id === i
     );
-
     openModal = true;
   };
   const closeModalFromParent = () => {
@@ -41,99 +39,109 @@
   };
 </script>
 
-<section class=" rounded-lg shadow-lg w-full overflow-x-auto">
-  <table class="w-full divide-y divide-gray-200">
-    <thead class="bg-surface-100/50 dark:bg-surface-800/50 backdrop-blur">
-      <tr>
-        {#each fields as field}
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-          >
-            {field}
-          </th>
-        {/each}
-      </tr>
-    </thead>
-    <tbody class=" divide-y divide-gray-200">
-      {#key playlistTracks.href}
-        {#each slicedSource(playlistTracks.items) as track, idx (track)}
-          <tr
-            class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
-            in:fly={{
-              x: -24,
-              y: 0,
-              opacity: 0,
-              duration: 220,
-              delay: idx * 100,
-            }}
-            animate:flip
-            onclick={() => setActiveIndex(track.track.id)}
-          >
-            <td class="{tdClass} flex gap-2">
-              <div class="w-10 h-10">
-                <img
-                  src={track.track.album.images[2].url}
-                  alt={track.track.name}
-                  loading="lazy"
-                  class="cover rounded-lg w-full h-full"
-                />
-              </div>
-              <div class="text-sm font-medium my-auto">
-                {track.track.name}
-              </div>
-            </td>
-            <td class={tdClass}>
-              <div class="text-sm">
-                {#each track.track.artists as artist, idx}
-                  <span>
-                    {artist.name}
-                    {idx < track.track.artists.length - 1 && ", "}
-                  </span>
-                {/each}
-              </div>
-            </td>
-            <td class="{tdClass} text-sm">
-              {formatDuration(track.track.duration_ms)}
-            </td>
-            <td class={tdClass}>
-              <div class="flex items-center">
-                <div class="text-sm font-medium">
-                  {track.popularity}
+<div class="bg-surface-100-800-token border border-surface-200-700-token rounded-2xl shadow-xl overflow-hidden">
+  <div class="overflow-x-auto w-full">
+    <table class="w-full text-left border-collapse whitespace-nowrap">
+      <thead class="bg-surface-200-700-token/50 border-b border-surface-200-700-token">
+        <tr>
+          {#each fields as field}
+            <th class="px-4 sm:px-6 py-4 text-xs font-bold text-surface-500-400-token uppercase tracking-wider">
+              {field}
+            </th>
+          {/each}
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-surface-200-700-token">
+        {#key playlistTracks.href}
+          {#each slicedSource(playlistTracks.items) as track, idx (track)}
+            <tr
+              class="hover:bg-surface-200-700-token/50 transition-colors duration-200 ease-in-out cursor-pointer group"
+              in:fly={{
+                x: -20,
+                opacity: 0,
+                duration: 300,
+                delay: idx * 50,
+              }}
+              animate:flip={{ duration: 300 }}
+              onclick={() => setActiveIndex(track.track.id)}
+            >
+              <td class="px-4 sm:px-6 py-3">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 relative">
+                    <img
+                      src={track.track.album.images[2]?.url || track.track.album.images[0]?.url}
+                      alt={track.track.name}
+                      loading="lazy"
+                      class="object-cover rounded-md w-full h-full shadow-sm group-hover:shadow-md transition-shadow"
+                    />
+                    <div class="absolute inset-0 bg-black/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <!-- Play icon placeholder -->
+                    </div>
+                  </div>
+                  <div class="flex flex-col min-w-0 max-w-[150px] sm:max-w-[300px]">
+                    <span class="text-sm sm:text-base font-bold text-surface-900-50-token truncate group-hover:text-[var(--color-spotify-green)] transition-colors">
+                      {track.track.name}
+                    </span>
+                    <!-- Show artists on mobile under track name to save space -->
+                    <span class="text-xs text-surface-500-400-token truncate sm:hidden">
+                      {track.track.artists.map((a: any) => a.name).join(", ")}
+                    </span>
+                  </div>
                 </div>
-                <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                  <div
-                    class="bg-green-500 h-2 rounded-full"
-                    style={`width: ${track.track.popularity}%`}
-                  ></div>
+              </td>
+              
+              <!-- Artists Column (Hidden on very small screens) -->
+              <td class="px-4 sm:px-6 py-3 hidden sm:table-cell">
+                <div class="text-sm text-surface-600-300-token max-w-[120px] md:max-w-[200px] truncate">
+                  {track.track.artists.map((a: any) => a.name).join(", ")}
                 </div>
-              </div>
-            </td>
-          </tr>
-        {/each}
-      {/key}
-    </tbody>
-  </table>
-  <Modal
-    cardType="track"
-    cardData={activeTrack[0].track}
-    {openModal}
-    {closeModalFromParent}
-  />
-</section>
+              </td>
+              
+              <td class="px-4 sm:px-6 py-3 text-sm text-surface-500-400-token font-medium">
+                {formatDuration(track.track.duration_ms)}
+              </td>
+              
+              <td class="px-4 sm:px-6 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="text-sm font-bold text-surface-700-200-token w-6 text-right">
+                    {track.track.popularity}
+                  </div>
+                  <div class="hidden sm:block w-24 bg-surface-300-600-token rounded-full h-2 overflow-hidden">
+                    <div
+                      class="h-full rounded-full bg-gradient-to-r from-[var(--color-spotify-green)] to-emerald-400 shadow-[0_0_10px_rgba(30,215,96,0.5)]"
+                      style={`width: ${track.track.popularity}%`}
+                    ></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {/each}
+        {/key}
+      </tbody>
+    </table>
+  </div>
+  
+  <footer class="p-4 sm:p-6 border-t border-surface-200-700-token flex justify-center bg-surface-50-950-token/50">
+    <Pagination
+      data={playlistTracks.items}
+      {page}
+      onPageChange={(e) => (page = e.page)}
+      pageSize={size}
+      siblingCount={1}
+      class="scale-90 sm:scale-100"
+    >
+      {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
+      {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
+      {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
+      {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
+      {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+    </Pagination>
+  </footer>
+</div>
 
-<footer class="flex justify-center">
-  <!-- Pagination -->
-  <Pagination
-    data={playlistTracks.items}
-    {page}
-    onPageChange={(e) => (page = e.page)}
-    pageSize={size}
-    siblingCount={4}
-  >
-    {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
-    {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
-    {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
-    {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
-    {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
-  </Pagination>
-</footer>
+<Modal
+  cardType="track"
+  cardData={activeTrack[0]?.track}
+  {openModal}
+  {closeModalFromParent}
+/>
