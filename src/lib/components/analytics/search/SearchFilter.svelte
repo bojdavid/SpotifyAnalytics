@@ -38,27 +38,36 @@
 </script>
 
 <section
-  class="absolute right-0 top-20 max-w-[500px] w-full min-h-[400px] border-1 border-spotify-green bg-spotify-green/90 z-50"
+  class="absolute right-0 top-[60px] w-[320px] bg-zinc-900 border border-zinc-700/50 rounded-xl shadow-2xl z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200"
 >
-  Filter by type:
-  <div class="flex gap-3 flex-wrap border-1 mx-3 p-3">
+  <div class="px-5 py-4 border-b border-zinc-800">
+    <h3 class="text-white font-semibold text-sm tracking-wide">Filter your search</h3>
+    <p class="text-zinc-400 text-xs mt-1">Select the categories you want to see.</p>
+  </div>
+
+  <div class="p-5 flex flex-wrap gap-2.5">
     {#each filterTypeQueries as query}
-      <div class=" border-1 rounded-lg px-3">
+      <label class="cursor-pointer">
         <input
           type="checkbox"
-          id={query.type}
           bind:checked={query.use}
-          class="w-5 h-5 my-auto"
+          class="hidden"
         />
-        <label for={query.type}>{query.type}</label>
-      </div>
+        <div 
+          class="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border {query.use ? 'bg-spotify-green text-black border-spotify-green hover:bg-green-400' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:border-zinc-500 hover:text-white'}"
+        >
+          {query.type.charAt(0).toUpperCase() + query.type.slice(1)}
+        </div>
+      </label>
     {/each}
   </div>
 
-  <button
-    onclick={() => saveFilters_(filterTypeQueries)}
-    class="bg-spotify-black text-white px-3 py-2 rounded-lg active:scale-90 transition-transform z-50 float-right mt-5"
-  >
-    Save filters
-  </button>
+  <div class="p-4 bg-zinc-950/50 border-t border-zinc-800 flex justify-end">
+    <button
+      onclick={() => saveFilters_(filterTypeQueries)}
+      class="bg-white hover:bg-zinc-200 text-black font-semibold px-5 py-2 rounded-full text-sm transition-all duration-200 hover:scale-105 active:scale-95"
+    >
+      Apply Filters
+    </button>
+  </div>
 </section>

@@ -89,7 +89,7 @@
   };
 </script>
 
-<div>
+<div class="mb-6 flex justify-end">
   <SortBy
     {filter}
     {onFilterChange}
@@ -98,85 +98,96 @@
     {isAscending}
   />
 </div>
-<div class=" rounded-lg shadow-lg w-full overflow-x-auto">
-  <table class="w-full divide-y divide-gray-200">
-    <TableHeadSnippet {fields} />
-    <tbody class=" divide-y divide-gray-200">
-      {#key activeFilter.name}
-        {#each slicedSource(recentTracks) as recentT, idx (recentT)}
-          <tr
-            class="hover:bg-surface-500/50 transition-colors duration-200 ease-in-out"
-            in:fly={{
-              x: -24,
-              y: 0,
-              opacity: 0,
-              duration: 220,
-              delay: idx * 100,
-            }}
-            animate:flip
-            onclick={() => {
-              if (recentT.rank) {
-                setActiveIndex(recentT.rank - 1);
-              }
-            }}
-          >
-            <td class={tdClass}>
-              <p class="text-lg text-center">{recentT.rank}</p>
-            </td>
-            <td class="{tdClass} flex gap-2">
-              <div class="w-10 h-10">
-                <img
-                  src={recentT.track.album.images[2].url}
-                  alt={recentT.track.name}
-                  loading="lazy"
-                  class="cover rounded-lg w-full h-full"
-                />
-              </div>
-              <div class="text-sm font-medium my-auto">
-                {recentT.track.name}
-              </div>
-            </td>
-            <td class="{tdClass} {hideOnMobile}">
-              <div class="text-sm flex">
-                {#each recentT.track.artists as artist}
-                  <span class="flex">
+
+<div class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl w-full overflow-hidden mb-8">
+  <div class="overflow-x-auto w-full">
+    <table class="w-full whitespace-nowrap text-left border-collapse">
+      <TableHeadSnippet {fields} />
+      <tbody class="divide-y divide-zinc-800/50">
+        {#key activeFilter.name}
+          {#each slicedSource(recentTracks) as recentT, idx (recentT)}
+            <tr
+              class="group hover:bg-zinc-800/40 transition-colors duration-300 cursor-pointer"
+              in:fly={{
+                x: -24,
+                y: 0,
+                opacity: 0,
+                duration: 220,
+                delay: idx * 50,
+              }}
+              animate:flip
+              onclick={() => {
+                if (recentT.rank) {
+                  setActiveIndex(recentT.rank - 1);
+                }
+              }}
+            >
+              <td class="{tdClass} py-4 px-6 text-zinc-400 font-medium w-16">
+                <span class="bg-zinc-800 text-zinc-300 rounded-md px-2.5 py-1 text-xs shadow-inner">{recentT.rank}</span>
+              </td>
+              <td class="{tdClass} py-4 px-6 flex items-center gap-4 min-w-[250px]">
+                <div class="w-12 h-12 flex-shrink-0 relative overflow-hidden rounded-md shadow-md group-hover:scale-105 transition-transform duration-300">
+                  <img
+                    src={recentT.track.album.images[2]?.url || recentT.track.album.images[1]?.url}
+                    alt={recentT.track.name}
+                    loading="lazy"
+                    class="object-cover w-full h-full"
+                  />
+                  <!-- Hover Play Overlay -->
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                </div>
+                <div class="text-base font-bold text-white group-hover:text-spotify-green transition-colors truncate">
+                  {recentT.track.name}
+                </div>
+              </td>
+              <td class="{tdClass} py-4 px-6 hidden md:table-cell text-zinc-400 text-sm max-w-[200px] truncate">
+                <div class="truncate">
+                  {#each recentT.track.artists as artist, i}
+                    {#if i > 0}<span class="text-zinc-600 px-1">•</span>{/if}
+                    <span class="hover:text-white transition-colors">{artist.name}</span>
+                  {/each}
+                </div>
+              </td>
+              <td class="{tdClass} py-4 px-6 text-zinc-400 font-medium text-sm">
+                <span class="bg-zinc-800/80 border border-zinc-700/50 px-2.5 py-1 rounded-md text-xs">{timeElapsedSince(recentT.played_at)} ago</span>
+              </td>
+              <td class="{tdClass} py-4 px-6 hidden md:table-cell">
+                <div class="flex items-center gap-3">
+                  <div class="text-xs font-bold text-zinc-300 w-6 text-right">
+                    {recentT.track.popularity}
+                  </div>
+                  <div class="w-24 bg-zinc-700/50 rounded-full h-1.5 overflow-hidden">
                     <div
-                      class="w-2 h-2 bg-spotify-green rounded-full my-auto mx-1"
+                      class="bg-spotify-green h-full rounded-full shadow-[0_0_8px_rgba(29,185,84,0.6)]"
+                      style={`width: ${recentT.track.popularity}%`}
                     ></div>
-                    {artist.name}
-                  </span>
-                {/each}
-              </div>
-            </td>
-            <td class="{tdClass} text-sm">
-              {timeElapsedSince(recentT.played_at)} ago
-            </td>
-            <td class="{tdClass} {hideOnMobile}">
-              <div class="flex items-center">
-                <div class="text-sm font-medium">
-                  {recentT.track.popularity}
+                  </div>
                 </div>
-                <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                  <div
-                    class="bg-green-500 h-2 rounded-full"
-                    style={`width: ${recentT.track.popularity}%`}
-                  ></div>
-                </div>
-              </div>
-            </td>
-          </tr>
-        {/each}
-      {/key}
-    </tbody>
-  </table>
+              </td>
+            </tr>
+          {/each}
+        {/key}
+      </tbody>
+      <tfoot class="bg-zinc-950/50 border-t border-zinc-800">
+        <tr>
+          <td colspan="4" class="py-3 px-6 text-xs text-zinc-500 uppercase tracking-wider font-bold">Total Listens</td>
+          <td class="py-3 px-6 text-right text-xs text-zinc-400 font-medium hidden md:table-cell">{recentTracks.length} Elements</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </div>
+
 <Modal
   cardType="track"
   cardData={recentTracks[activeTrackIndex].track}
   {openModal}
   {closeModalFromParent}
 />
-<footer class="flex justify-center">
+
+<footer class="flex justify-center mb-8">
   <!-- Pagination -->
   <Pagination
     data={recentTracks}
@@ -185,10 +196,10 @@
     pageSize={size}
     siblingCount={4}
   >
-    {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
-    {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
-    {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
-    {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
-    {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+    {#snippet labelEllipsis()}<IconEllipsis class="size-4 text-zinc-400" />{/snippet}
+    {#snippet labelNext()}<IconArrowRight class="size-4 text-zinc-400" />{/snippet}
+    {#snippet labelPrevious()}<IconArrowLeft class="size-4 text-zinc-400" />{/snippet}
+    {#snippet labelFirst()}<IconFirst class="size-4 text-zinc-400" />{/snippet}
+    {#snippet labelLast()}<IconLast class="size-4 text-zinc-400" />{/snippet}
   </Pagination>
 </footer>

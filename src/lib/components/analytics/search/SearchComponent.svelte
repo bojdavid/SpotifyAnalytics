@@ -19,6 +19,8 @@
   import SearchResults from "./SearchResults.svelte";
   import Tabs from "$lib/components/common/Tabs.svelte";
 
+  let { closeDialog } = $props();
+
   let searchValue: string = $state("");
   let timeoutId: number | null = null;
 
@@ -124,52 +126,81 @@
   };
 </script>
 
-<section class=" mx-2 min-h-[400px] h-auto px-5">
-  <div class="flex justify-center pt-5 relative">
-    <div class="relative w-[700px]">
+<section class="flex flex-col h-full min-h-[60vh] p-6 pt-12 md:px-8">
+  <!-- Search Input Header -->
+  <div class="flex items-center w-full gap-3 relative z-40">
+    <div class="relative flex-1 group">
       <Search
-        size={20}
-        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+        size={22}
+        class="absolute left-5 top-1/2 transform -translate-y-1/2 text-zinc-400 group-focus-within:text-white transition-colors"
       />
       <input
         type="text"
-        placeholder="Search for a song"
-        class=" max-w-[700px] w-full border rounded-lg px-5 pl-10 py-2 text-lg focus:border-spotify-green focus:ring-spotify-green focus:outline-none"
+        placeholder="What do you want to listen to?"
+        class="w-full bg-zinc-800/80 border border-zinc-700/50 rounded-full px-6 pl-14 py-3.5 text-lg text-white placeholder-zinc-400 focus:bg-zinc-800 focus:border-spotify-green focus:ring-1 focus:ring-spotify-green focus:outline-none transition-all duration-300 shadow-inner"
         bind:value={queryParameters.track}
         oninput={handleInputChange}
+        autofocus
       />
     </div>
 
-    <button onclick={toggleShowFilterOptions} class="mx-3">
-      <SlidersHorizontal size={20} />
-    </button>
-    {#if showFIlterOptions}
-      <SearchFilter saveFilters={updateFilterType} {toggleShowFilterOptions} />
-    {/if}
-  </div>
-  {#if isLoading}
-    <div class="flex justify-center items-center">
-      <Loader size={60} class="animate-spin mt-10" />
+    <div class="relative">
+      <button 
+        onclick={toggleShowFilterOptions} 
+        class="p-3.5 bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 hover:border-zinc-500 rounded-full text-zinc-300 hover:text-white transition-all duration-200 shadow-md {showFIlterOptions ? 'bg-zinc-700 text-spotify-green border-spotify-green/50' : ''}"
+        aria-label="Toggle Filters"
+      >
+        <SlidersHorizontal size={22} />
+      </button>
+      
+      {#if showFIlterOptions}
+        <SearchFilter saveFilters={updateFilterType} {toggleShowFilterOptions} />
+      {/if}
     </div>
-  {:else}
-    <div class="  h-full w-full mt-5">
-      {#if searchData == undefined || searchData == null || searchData == ""}
-        <div class="w-full h-full flex justify-center items-center flex-col">
+  </div>
+
+  <!-- Search Results Area -->
+  <div class="flex-1 overflow-y-auto mt-6 pb-6 relative z-10 custom-scrollbar">
+    {#if isLoading}
+      <div class="flex justify-center items-center h-64">
+        <Loader size={48} class="animate-spin text-spotify-green" />
+      </div>
+    {:else}
+      {#if !searchData || searchData == ""}
+        <div class="w-full h-64 flex justify-center items-center flex-col opacity-70 mt-10">
           <img
             src={SL}
             alt="spotify-logo"
-            class="w-50 h-auto cover opacity-50"
+            class="w-20 h-20 object-contain mb-6 grayscale opacity-30"
           />
-          <p class="text-md">No recent Searches</p>
+          <p class="text-zinc-300 text-xl font-bold tracking-tight mb-2">Play what you love</p>
+          <p class="text-zinc-500 text-sm">Search for artists, songs, podcasts, and more.</p>
         </div>
       {:else}
-        <div class="">
+        <div class="mb-6 sticky top-0 bg-zinc-900/90 backdrop-blur-md z-20 py-2 border-b border-zinc-800/50">
           <Tabs tabData={queryArray} {activetab} {setActiveTab} />
         </div>
-        <div>
+        <div class="animate-in fade-in duration-500">
           <SearchResults {searchData} {activetab} />
         </div>
       {/if}
-    </div>
-  {/if}
+    {/if}
+  </div>
 </section>
+
+<style>
+  /* Custom scrollbar for a sleeker look */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+</style>

@@ -59,125 +59,137 @@
   };
 </script>
 
-<article class=" w-[600px] max-w-full px-5 mx-auto">
-  <header class="flex gap-5 justify-between pt-5">
-    <div>
-      <h2>{artistData.name}</h2>
-      <p class="text-xs">
-        <span class="font-light text-surface-400">Followers : </span>
-        {formatFollowerCount(artistData.followers.total)}
-      </p>
-      <div class="flex items-center gap-2">
+<article class="w-full max-w-[450px] mx-auto bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/50 rounded-3xl overflow-hidden shadow-2xl relative group">
+  <!-- Top Banner Background Blur -->
+  <div class="absolute inset-0 h-64 w-full z-0 pointer-events-none">
+    <img src={artistData.images[0]?.url || artistData.images[1]?.url} alt="" class="w-full h-full object-cover blur-3xl opacity-30 group-hover:opacity-40 transition-opacity duration-700" />
+    <div class="absolute inset-0 bg-gradient-to-b from-zinc-900/10 via-zinc-900/80 to-zinc-900/100"></div>
+  </div>
+
+  <div class="p-6 sm:p-8 relative z-10 flex flex-col items-center">
+    
+    <!-- Follow Status Overlay (Top Right) -->
+    <div class="absolute top-6 right-6 flex items-center gap-2 bg-zinc-800/60 border border-zinc-700/50 px-3 py-1.5 rounded-full backdrop-blur-sm text-xs font-semibold">
+      {#if loading}
+        <div class="w-16 h-3 bg-zinc-600 animate-pulse rounded"></div>
+      {:else if userFollowsArtist}
+        <User size={14} class="text-spotify-green" />
+        <span class="text-spotify-green">Following</span>
+      {:else}
+        <User size={14} class="text-zinc-400" />
+        <span class="text-zinc-400">Not Following</span>
+      {/if}
+      {#if follow_unFollow_Artist_Pending}
+        <Loader size={12} class="animate-spin text-spotify-green ml-1" />
+      {/if}
+    </div>
+
+    <!-- Artist Image -->
+    <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.6)] mb-6 mt-4 relative group-hover:-translate-y-2 transition-transform duration-500 border-4 border-zinc-800/50">
+      <img
+        src={artistData.images[0]?.url || artistData.images[1]?.url}
+        alt={artistData.name}
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+      />
+    </div>
+
+    <!-- Title & Stats -->
+    <div class="text-center w-full mb-6">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-2 truncate px-2" title={artistData.name}>{artistData.name}</h2>
+      <div class="flex items-center justify-center gap-4 text-sm text-zinc-400">
+        <div class="flex flex-col items-center">
+          <span class="font-bold text-white">{formatFollowerCount(artistData.followers.total)}</span>
+          <span class="text-[10px] uppercase tracking-wider">Followers</span>
+        </div>
+        <div class="w-px h-8 bg-zinc-700"></div>
+        <div class="flex flex-col items-center">
+          <span class="font-bold text-white">{artistData.popularity}%</span>
+          <span class="text-[10px] uppercase tracking-wider">Popularity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Genres Grid -->
+    {#if artistData.genres?.length > 0}
+      <div class="w-full mb-8">
+        <h4 class="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-3 text-center">Genres</h4>
+        <div class="flex gap-2 flex-wrap justify-center">
+          {#each artistData.genres as genre}
+            <span class="text-[10px] font-bold tracking-widest px-3 py-1.5 bg-zinc-800/60 text-zinc-300 border border-zinc-700/50 rounded-full hover:bg-zinc-700 hover:text-white transition-colors">
+              {genre}
+            </span>
+          {/each}
+        </div>
+      </div>
+    {/if}
+
+    <!-- Top Tracks -->
+    <div class="w-full mb-6">
+      <div class="flex justify-between items-end mb-3 px-1">
+        <h4 class="text-white text-sm font-bold">Top Tracks</h4>
+        <span class="text-zinc-500 text-[10px] uppercase tracking-wider">Scroll to view</span>
+      </div>
+
+      <div class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-2 custom-scrollbar">
         {#if loading}
-          <div class="w-25 h-4 bg-spotify-green/50 animate-pulse"></div>
-        {:else if userFollowsArtist}
-          <div
-            class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
-            "
-          >
-            <span>
-              <User size={20} />
-            </span>
-            Following
-          </div>
+          {#each [...Array(5).keys()] as n}
+            <div class="w-full flex items-center bg-zinc-800/30 border border-zinc-800 p-2 animate-pulse rounded-xl gap-3">
+              <div class="rounded-md bg-zinc-700/50 animate-pulse h-10 w-10 flex-shrink-0"></div>
+              <div class="w-full flex flex-col gap-2">
+                <div class="w-3/4 bg-zinc-700/50 animate-pulse h-3 rounded"></div>
+                <div class="w-1/2 bg-zinc-700/50 animate-pulse h-2 rounded"></div>
+              </div>
+            </div>
+          {/each}
         {:else}
-          <div
-            class="text-spotify-green rounded-lg text-sm font-bold flex gap-1
-            "
-          >
-            <span class="text-xs">
-              <User size={20} />
-            </span>
-            Not Following
-          </div>
-        {/if}
-        <!-- Load indicator for when user clicks the follow button -->
-        {#if follow_unFollow_Artist_Pending}
-          <Loader size={10} class="animate-spin inline-flex" />
+          {#each artistTopTracks.tracks as track}
+            <button class="w-full text-left flex items-center gap-3 bg-zinc-800/30 border border-zinc-800/50 hover:border-zinc-600 hover:bg-zinc-800/80 p-2 transition-all duration-300 rounded-xl group/track">
+              <div class="h-10 w-10 flex-shrink-0 rounded-md overflow-hidden relative">
+                <img src={track.album.images[2]?.url || track.album.images[1]?.url} alt={track.name} class="w-full h-full object-cover group-hover/track:scale-110 transition-transform duration-500" />
+                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover/track:opacity-100 flex items-center justify-center transition-opacity">
+                   <svg viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-white"><path d="M8 5v14l11-7z" /></svg>
+                </div>
+              </div>
+              <div class="flex flex-col flex-grow min-w-0">
+                <p class="text-sm font-medium text-white truncate group-hover/track:text-spotify-green transition-colors">{track.name}</p>
+                <div class="flex gap-1 items-center text-xs text-zinc-400 truncate mt-0.5">
+                  {#each track.artists as artist, i}
+                    {#if i > 0}<span class="text-zinc-600">•</span>{/if}
+                    <span class="truncate">{artist.name}</span>
+                  {/each}
+                </div>
+              </div>
+            </button>
+          {/each}
         {/if}
       </div>
     </div>
-  </header>
 
-  <!-- Image container -->
-  <div
-    class="border-2 border-spotify-green rounded-full w-40 h-40 md:w-60 md:h-60 mx-auto shadow-lg shadow-spotify-green hover:shadow-xl transition duration-300 ease-in-out overflow-hidden"
-  >
-    <img
-      src={artistData.images[1].url}
-      alt={artistData.name}
-      class="w-full h-full cover"
-    />
-  </div>
-  <p class="text-center mt-5">popularity: {artistData.popularity}</p>
-
-  <!-- Genre Container -->
-  <div>
-    <h4>Genres</h4>
-    <div class="flex gap-2 flex-wrap">
-      {#each artistData.genres as genre}
-        <div
-          class="border-1 border-spotify-green rounded-sm px-3 text-xs sm:text-sm md:text-md"
-        >
-          {genre}
-        </div>
-      {/each}
+    <!-- Actions -->
+    <div class="w-full mt-2">
+      <a
+        href={artistData.uri}
+        target="_blank"
+        class="w-full bg-spotify-green hover:bg-[#3be477] hover:scale-[1.02] active:scale-95 text-black font-bold py-3.5 px-4 rounded-full transition-all duration-300 flex items-center justify-center shadow-[0_0_20px_rgba(29,185,84,0.3)] hover:shadow-[0_0_25px_rgba(29,185,84,0.5)]"
+      >
+        <span class="text-sm">Open in Spotify</span>
+      </a>
     </div>
   </div>
-
-  <!-- Top 10 tracks-->
-  <div class="mt-5">
-    <h4>{artistData.name} top 10 tracks</h4>
-    <p class="text-xs text-surface-500">Click On A Track To View It</p>
-
-    {#if loading}
-      <!-- Place holder for top 10 artist when loading-->
-      {#each [...Array(10).keys()] as n}
-        <div
-          class="w-full flex items-center border-spotify-green border-1 my-2 p-1 animate-pulse rounded-lg gap-2"
-        >
-          <div
-            class="rounded-full bg-surface-800 animate-pulse h-10 w-10"
-          ></div>
-          <div class="w-full bg-surface-800 animate pulse h-5"></div>
-        </div>
-      {/each}
-    {:else}
-      {#each artistTopTracks.tracks as track}
-        <button
-          class="w-full text-[10px] md:text-sm text-left flex items-center gap-2 border-spotify-green border-1 my-2 p-1 hover:bg-spotify-green/50 transition duration-500 ease-in-out rounded-lg active:scale-95 active:bg-spotify-green/30 text-wrap"
-        >
-          <div class="h-10 w-10 rounded-full">
-            <img
-              src={track.album.images[2].url}
-              alt={track.name}
-              class="w-full h-full cover rounded-lg"
-            />
-          </div>
-          <div>
-            <p>
-              {track.name}
-            </p>
-            <div class="flex gap-1 items-center text-xs">
-              {#each track.artists as artist}
-                <div class="w-1 h-1 rounded-lg bg-spotify-green"></div>
-                <p>{artist.name}</p>
-              {/each}
-            </div>
-          </div>
-        </button>
-      {/each}
-    {/if}
-  </div>
-
-  <!-- Actions-->
-  <div class="flex justify-end mt-5">
-    <a
-      href={artistData.uri}
-      target="_blank"
-      class="text-spotify-green font-bold px-5 py-2 rounded-lg flex text-sm"
-    >
-      Open In Spotify
-    </a>
-  </div>
 </article>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+  }
+</style>
