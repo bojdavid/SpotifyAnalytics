@@ -36,7 +36,7 @@
   let page = $state(1);
   const size = 10;
   const slicedSource = $derived((s: any) =>
-    s.slice((page - 1) * size, page * size)
+    s.slice((page - 1) * size, page * size),
   );
 
   $effect(() => {
@@ -46,7 +46,7 @@
     }));
     //recentTracks = recentTracks_.items;
   });
-  console.log("THis is the recentr", $state.snapshot(recentTracks_));
+  //console.log("THis is the recentr", $state.snapshot(recentTracks_));
 
   //Filters
   const filter = [
@@ -99,7 +99,9 @@
   />
 </div>
 
-<div class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl w-full overflow-hidden mb-8">
+<div
+  class="bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/50 rounded-2xl shadow-2xl w-full overflow-hidden mb-8"
+>
   <div class="overflow-x-auto w-full">
     <table class="w-full whitespace-nowrap text-left border-collapse">
       <TableHeadSnippet {fields} />
@@ -123,42 +125,67 @@
               }}
             >
               <td class="{tdClass} py-4 px-6 text-zinc-400 font-medium w-16">
-                <span class="bg-zinc-800 text-zinc-300 rounded-md px-2.5 py-1 text-xs shadow-inner">{recentT.rank}</span>
+                <span
+                  class="bg-zinc-800 text-zinc-300 rounded-md px-2.5 py-1 text-xs shadow-inner"
+                  >{recentT.rank}</span
+                >
               </td>
-              <td class="{tdClass} py-4 px-6 flex items-center gap-4 min-w-[250px]">
-                <div class="w-12 h-12 flex-shrink-0 relative overflow-hidden rounded-md shadow-md group-hover:scale-105 transition-transform duration-300">
+              <td
+                class="{tdClass} py-4 px-6 flex items-center gap-4 min-w-[250px]"
+              >
+                <div
+                  class="w-12 h-12 flex-shrink-0 relative overflow-hidden rounded-md shadow-md group-hover:scale-105 transition-transform duration-300"
+                >
                   <img
-                    src={recentT.track.album.images[2]?.url || recentT.track.album.images[1]?.url}
+                    src={recentT.track.album.images[2]?.url ||
+                      recentT.track.album.images[1]?.url}
                     alt={recentT.track.name}
                     loading="lazy"
                     class="object-cover w-full h-full"
                   />
                   <!-- Hover Play Overlay -->
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white"><path d="M8 5v14l11-7z" /></svg>
+                  <div
+                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      class="w-5 h-5 text-white"><path d="M8 5v14l11-7z" /></svg
+                    >
                   </div>
                 </div>
-                <div class="text-base font-bold text-white group-hover:text-spotify-green transition-colors truncate">
+                <div
+                  class="text-base font-bold text-white group-hover:text-spotify-green transition-colors truncate"
+                >
                   {recentT.track.name}
                 </div>
               </td>
-              <td class="{tdClass} py-4 px-6 hidden md:table-cell text-zinc-400 text-sm max-w-[200px] truncate">
+              <td
+                class="{tdClass} py-4 px-6 hidden md:table-cell text-zinc-400 text-sm max-w-[200px] truncate"
+              >
                 <div class="truncate">
                   {#each recentT.track.artists as artist, i}
                     {#if i > 0}<span class="text-zinc-600 px-1">•</span>{/if}
-                    <span class="hover:text-white transition-colors">{artist.name}</span>
+                    <span class="hover:text-white transition-colors"
+                      >{artist.name}</span
+                    >
                   {/each}
                 </div>
               </td>
               <td class="{tdClass} py-4 px-6 text-zinc-400 font-medium text-sm">
-                <span class="bg-zinc-800/80 border border-zinc-700/50 px-2.5 py-1 rounded-md text-xs">{timeElapsedSince(recentT.played_at)} ago</span>
+                <span
+                  class="bg-zinc-800/80 border border-zinc-700/50 px-2.5 py-1 rounded-md text-xs"
+                  >{timeElapsedSince(recentT.played_at)} ago</span
+                >
               </td>
               <td class="{tdClass} py-4 px-6 hidden md:table-cell">
                 <div class="flex items-center gap-3">
                   <div class="text-xs font-bold text-zinc-300 w-6 text-right">
                     {recentT.track.popularity}
                   </div>
-                  <div class="w-24 bg-zinc-700/50 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    class="w-24 bg-zinc-700/50 rounded-full h-1.5 overflow-hidden"
+                  >
                     <div
                       class="bg-spotify-green h-full rounded-full shadow-[0_0_8px_rgba(29,185,84,0.6)]"
                       style={`width: ${recentT.track.popularity}%`}
@@ -172,8 +199,15 @@
       </tbody>
       <tfoot class="bg-zinc-950/50 border-t border-zinc-800">
         <tr>
-          <td colspan="4" class="py-3 px-6 text-xs text-zinc-500 uppercase tracking-wider font-bold">Total Listens</td>
-          <td class="py-3 px-6 text-right text-xs text-zinc-400 font-medium hidden md:table-cell">{recentTracks.length} Elements</td>
+          <td
+            colspan="4"
+            class="py-3 px-6 text-xs text-zinc-500 uppercase tracking-wider font-bold"
+            >Total Listens</td
+          >
+          <td
+            class="py-3 px-6 text-right text-xs text-zinc-400 font-medium hidden md:table-cell"
+            >{recentTracks.length} Elements</td
+          >
         </tr>
       </tfoot>
     </table>
@@ -196,9 +230,15 @@
     pageSize={size}
     siblingCount={4}
   >
-    {#snippet labelEllipsis()}<IconEllipsis class="size-4 text-zinc-400" />{/snippet}
-    {#snippet labelNext()}<IconArrowRight class="size-4 text-zinc-400" />{/snippet}
-    {#snippet labelPrevious()}<IconArrowLeft class="size-4 text-zinc-400" />{/snippet}
+    {#snippet labelEllipsis()}<IconEllipsis
+        class="size-4 text-zinc-400"
+      />{/snippet}
+    {#snippet labelNext()}<IconArrowRight
+        class="size-4 text-zinc-400"
+      />{/snippet}
+    {#snippet labelPrevious()}<IconArrowLeft
+        class="size-4 text-zinc-400"
+      />{/snippet}
     {#snippet labelFirst()}<IconFirst class="size-4 text-zinc-400" />{/snippet}
     {#snippet labelLast()}<IconLast class="size-4 text-zinc-400" />{/snippet}
   </Pagination>

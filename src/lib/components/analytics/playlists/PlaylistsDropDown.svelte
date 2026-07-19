@@ -12,14 +12,11 @@
   };
 
   let searchQuery: string = $state("");
-  let filteredPlaylists: any[] = $state(playlists?.items || []);
-
-  const updateFIlterPlaylist = () => {
-    if (!playlists?.items) return;
-    filteredPlaylists = playlists.items.filter((playlist: any) =>
+  let filteredPlaylists = $derived(
+    (playlists?.items || []).filter((playlist: any) =>
       playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
+    )
+  );
 </script>
 
 <details bind:this={detailsDropDown} class="relative w-full sm:w-auto z-10 group">
@@ -58,7 +55,6 @@
           placeholder="Search your playlists..."
           class="input w-full pl-9 py-2 bg-surface-100-800-token border-none focus:ring-2 focus:ring-[var(--color-spotify-green)] rounded-lg text-sm transition-all"
           bind:value={searchQuery}
-          oninput={updateFIlterPlaylist}
         />
       </div>
     </div>

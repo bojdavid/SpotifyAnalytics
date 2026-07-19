@@ -5,14 +5,11 @@
   let { playlists } = $props();
 
   let searchQuery: string = $state("");
-  let filteredPlaylists: any[] = $state(playlists?.items || []);
-
-  const updateFIlterPlaylist = () => {
-    if (!playlists?.items) return;
-    filteredPlaylists = playlists.items.filter((playlist: any) =>
+  let filteredPlaylists = $derived(
+    (playlists?.items || []).filter((playlist: any) =>
       playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
+    )
+  );
 </script>
 
 <section class="w-full mt-10">
@@ -37,7 +34,6 @@
         placeholder="Search Playlists..."
         class="input w-full pl-10 py-2 bg-surface-200-700-token border-none focus:ring-2 focus:ring-[var(--color-spotify-green)] rounded-full text-sm placeholder:text-surface-400-500-token transition-all shadow-inner"
         bind:value={searchQuery}
-        oninput={updateFIlterPlaylist}
       />
     </div>
   </header>

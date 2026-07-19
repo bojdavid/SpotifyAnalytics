@@ -122,20 +122,21 @@
   </div>
   
   <footer class="p-4 sm:p-6 border-t border-surface-200-700-token flex justify-center bg-surface-50-950-token/50">
-    <Pagination
-      data={playlistTracks.items}
-      {page}
-      onPageChange={(e) => (page = e.page)}
-      pageSize={size}
-      siblingCount={1}
-      class="scale-90 sm:scale-100"
-    >
-      {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
-      {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
-      {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
-      {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
-      {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
-    </Pagination>
+    <div class="scale-90 sm:scale-100">
+      <Pagination
+        data={playlistTracks.items}
+        {page}
+        onPageChange={(e) => (page = e.page)}
+        pageSize={size}
+        siblingCount={1}
+      >
+        {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
+        {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
+        {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
+        {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
+        {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+      </Pagination>
+    </div>
   </footer>
 </div>
 

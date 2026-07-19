@@ -7,10 +7,6 @@
 
   let { data }: PageProps = $props();
 
-  // The code challenge and verifier are generated on the server (`+page.server.ts` or `+layout.server.ts`)
-  // to initiate the PKCE (Proof Key for Code Exchange) authorization flow.
-  const codeChallenge = data.codeChallenge;
-  const codeVerifier: string = data.codeVerifier;
   const clientId = PUBLIC_CLIENT_ID;
   const redirectUri = PUBLIC_REDIRECT_URI;
 
@@ -19,6 +15,11 @@
    * Redirects the user to Spotify's authorization page.
    */
   const authorize = () => {
+    // The code challenge and verifier are generated on the server (`+page.server.ts` or `+layout.server.ts`)
+    // to initiate the PKCE (Proof Key for Code Exchange) authorization flow.
+    const codeChallenge = data.codeChallenge;
+    const codeVerifier: string = data.codeVerifier;
+
     // Define the scopes (permissions) our app needs from the user
     const scope =
       "user-read-private user-read-email user-top-read user-read-recently-played user-read-playback-position user-follow-read playlist-read-private playlist-read-collaborative";

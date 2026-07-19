@@ -22,7 +22,7 @@
   let { closeDialog } = $props();
 
   let searchValue: string = $state("");
-  let timeoutId: number | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   let isLoading: boolean = $state(false);
   let searchData: any = $state(getCachedData("search"));
@@ -66,7 +66,7 @@
       try {
         // Parse the saved filter types from localStorage
         queryTypeFilter = convertQueriesToEncodedString(
-          JSON.parse(savedFilterTypes)
+          JSON.parse(savedFilterTypes),
         );
       } catch (error) {
         // Handle the case where the saved data is not valid JSON
@@ -95,7 +95,7 @@
         queryParameters.show,
         queryParameters.artist,
         queryParameters.episode,
-        queryParameters.audiobook
+        queryParameters.audiobook,
       );
       const response = await search(accessToken, queryTypeFilter, queryData);
       searchData = response;
@@ -140,21 +140,26 @@
         class="w-full bg-zinc-800/80 border border-zinc-700/50 rounded-full px-6 pl-14 py-3.5 text-lg text-white placeholder-zinc-400 focus:bg-zinc-800 focus:border-spotify-green focus:ring-1 focus:ring-spotify-green focus:outline-none transition-all duration-300 shadow-inner"
         bind:value={queryParameters.track}
         oninput={handleInputChange}
-        autofocus
+        //autofocus
       />
     </div>
 
     <div class="relative">
-      <button 
-        onclick={toggleShowFilterOptions} 
-        class="p-3.5 bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 hover:border-zinc-500 rounded-full text-zinc-300 hover:text-white transition-all duration-200 shadow-md {showFIlterOptions ? 'bg-zinc-700 text-spotify-green border-spotify-green/50' : ''}"
+      <button
+        onclick={toggleShowFilterOptions}
+        class="p-3.5 bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 hover:border-zinc-500 rounded-full text-zinc-300 hover:text-white transition-all duration-200 shadow-md {showFIlterOptions
+          ? 'bg-zinc-700 text-spotify-green border-spotify-green/50'
+          : ''}"
         aria-label="Toggle Filters"
       >
         <SlidersHorizontal size={22} />
       </button>
-      
+
       {#if showFIlterOptions}
-        <SearchFilter saveFilters={updateFilterType} {toggleShowFilterOptions} />
+        <SearchFilter
+          saveFilters={updateFilterType}
+          {toggleShowFilterOptions}
+        />
       {/if}
     </div>
   </div>
@@ -165,25 +170,31 @@
       <div class="flex justify-center items-center h-64">
         <Loader size={48} class="animate-spin text-spotify-green" />
       </div>
+    {:else if !searchData || searchData == ""}
+      <div
+        class="w-full h-64 flex justify-center items-center flex-col opacity-70 mt-10"
+      >
+        <img
+          src={SL}
+          alt="spotify-logo"
+          class="w-20 h-20 object-contain mb-6 grayscale opacity-30"
+        />
+        <p class="text-zinc-300 text-xl font-bold tracking-tight mb-2">
+          Play what you love
+        </p>
+        <p class="text-zinc-500 text-sm">
+          Search for artists, songs, podcasts, and more.
+        </p>
+      </div>
     {:else}
-      {#if !searchData || searchData == ""}
-        <div class="w-full h-64 flex justify-center items-center flex-col opacity-70 mt-10">
-          <img
-            src={SL}
-            alt="spotify-logo"
-            class="w-20 h-20 object-contain mb-6 grayscale opacity-30"
-          />
-          <p class="text-zinc-300 text-xl font-bold tracking-tight mb-2">Play what you love</p>
-          <p class="text-zinc-500 text-sm">Search for artists, songs, podcasts, and more.</p>
-        </div>
-      {:else}
-        <div class="mb-6 sticky top-0 bg-zinc-900/90 backdrop-blur-md z-20 py-2 border-b border-zinc-800/50">
-          <Tabs tabData={queryArray} {activetab} {setActiveTab} />
-        </div>
-        <div class="animate-in fade-in duration-500">
-          <SearchResults {searchData} {activetab} />
-        </div>
-      {/if}
+      <div
+        class="mb-6 sticky top-0 bg-zinc-900/90 backdrop-blur-md z-20 py-2 border-b border-zinc-800/50"
+      >
+        <Tabs tabData={queryArray} {activetab} {setActiveTab} />
+      </div>
+      <div class="animate-in fade-in duration-500">
+        <SearchResults {searchData} {activetab} />
+      </div>
     {/if}
   </div>
 </section>

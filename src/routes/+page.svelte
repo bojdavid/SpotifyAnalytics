@@ -7,9 +7,6 @@
 
   let { data }: PageProps = $props();
 
-  console.log(data);
-  const codeChallenge = data.codeChallenge;
-  const codeVerifier: string = data.codeVerifier;
   const clientId = PUBLIC_CLIENT_ID;
   const redirectUri = PUBLIC_REDIRECT_URI;
 
@@ -19,14 +16,14 @@
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     // generated in the previous step
-    window.localStorage.setItem("code_verifier", codeVerifier);
+    window.localStorage.setItem("code_verifier", data.codeVerifier);
 
     const params = {
       response_type: "code",
       client_id: clientId,
       scope,
       code_challenge_method: "S256",
-      code_challenge: codeChallenge,
+      code_challenge: data.codeChallenge,
       redirect_uri: redirectUri,
     };
 

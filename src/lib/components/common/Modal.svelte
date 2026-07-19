@@ -3,7 +3,7 @@
   import ArtistCard from "$lib/components/analytics/card/ArtistCard.svelte";
   import TrackCard from "$lib/components/analytics/card/TrackCard.svelte";
 
-  import { scale } from "svelte/transition";
+  import { scale, fly } from "svelte/transition";
   import { tick } from "svelte";
 
   interface Props {
@@ -23,9 +23,11 @@
 
   let dialogRef: HTMLDialogElement;
   let visible = $state(false); // controls transition of inner panel
+  let isMobile = $state(false);
 
   const openDialog = async () => {
     if (dialogRef?.open) return;
+    isMobile = window.innerWidth < 640; // Determine screen size on open
     visible = true; // mount content so transitions can play
     await tick(); // wait for DOM
     dialogRef?.showModal();
@@ -54,6 +56,15 @@
     // only close after the scale/fade outro finishes
     dialogRef?.close();
   };
+
+  // Custom responsive transition
+  function responsiveTransition(node: Element, params?: any) {
+    if (isMobile) {
+      return fly(node, { y: 400, duration: 300 });
+    } else {
+      return scale(node, { duration: 300, start: 0.8 });
+    }
+  }
 </script>
 
 <section>
@@ -64,28 +75,38 @@
   <dialog
     bind:this={dialogRef}
     onclick={handleBackdropClick}
-    class=" m-auto bg-transparent"
+    class="bg-transparent p-0 m-0 mt-auto w-full max-w-full sm:m-auto sm:w-auto sm:max-w-md overflow-hidden sm:rounded-2xl"
     onkeydown={(e) => e.key === "Escape" && dialogRef?.close()}
   >
     {#if visible}
       <div
-        class="bg-white/30 dark:bg-spotify-black/50 backdrop-blur w-full rounded-lg"
-        transition:scale={{ duration: 300, start: 0.8 }}
+        class="bg-zinc-900/90 dark:bg-spotify-black/90 backdrop-blur-xl w-full rounded-t-3xl sm:rounded-2xl shadow-2xl border-t border-zinc-700/50 sm:border relative max-h-[90vh] overflow-y-auto overflow-x-hidden"
+        transition:responsiveTransition
         onoutroend={handleOutroEnd}
       >
+        <!-- Mobile drag handle indicator -->
+        <div class="w-full flex justify-center pt-3 pb-1 sm:hidden">
+          <div class="w-12 h-1.5 bg-zinc-600 rounded-full"></div>
+        </div>
+
         <button
-          class="float-right text-red-500 float-right float-top"
+          class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors z-50 bg-black/20 rounded-full p-1"
           onclick={closeDialog}
         >
-          <X size={40} />
+          <X size={24} />
         </button>
-        {#if cardType == "artist"}
-          <ArtistCard artistData={cardData} />
-        {:else if cardType == "track"}
-          <TrackCard trackData={cardData} />
-        {:else}
-          <h1 class="text-center">Card does not exist</h1>
-        {/if}
+
+        <div class="p-2 sm:p-0">
+          {#if cardType == "artist"}
+            <ArtistCard artistData={cardData} />
+          {:else if cardType == "track"}
+            <TrackCard trackData={cardData} />
+          {:else}
+            <div class="p-8 text-center text-zinc-400 h-40 flex items-center justify-center">
+              <h1>Card does not exist</h1>
+            </div>
+          {/if}
+        </div>
       </div>
     {/if}
   </dialog>
@@ -93,6 +114,7 @@
 
 <style>
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
   }
 </style>
